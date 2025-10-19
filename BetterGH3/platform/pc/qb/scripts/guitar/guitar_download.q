@@ -73,7 +73,7 @@ GH3_Download_Songs = {
 			DLC93
 			DLC83
 		]
-		unlockall
+		defaultunlocked = 68
 		level = load_z_artdeco
 	}
 }
