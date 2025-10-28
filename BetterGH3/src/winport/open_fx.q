@@ -9,8 +9,45 @@ script GuitarEvent_HitNotes
 		UpdateGuitarVolume
 	endif
 	if (GotParam open)
-		Open_NoteFX player = <player> player_status = <player_status>
+		if (<whammy_length> > 0)
+			ExtendCRC open_sustain_fx ($<player_status>.text) out = scr_name
+		endif
+		spawnscriptnow Open_NoteFX id = <scr_name> params = {
+			array_entry = <array_entry> player = <player> player_status = <player_status> length = <whammy_length>
+		}
 	endif
+endscript
+
+script check_note_hold 
+	<index> = (<player> - 1)
+	begin
+	if ($currently_holding [<index>] = 0)
+		break
+	endif
+	Wait \{1
+		gameframe}
+	repeat
+	SetArrayElement ArrayName = currently_holding GlobalArray index = <index> newvalue = 1
+	CheckNoteHoldInit player = <player> player_status = <player_status> array_entry = <array_entry> time = <time> guitar_stream = <guitar_stream> song = <song> pattern = <pattern>
+	begin
+	if NOT CheckNoteHoldWait player = <player>
+		break
+	endif
+	Wait \{1
+		gameframe}
+	repeat
+	CheckNoteHoldStart player = <player>
+	begin
+	if NOT CheckNoteHoldPerFrame player = <player>
+		break
+	endif
+	Wait \{1
+		gameframe}
+	repeat
+	ExtendCRC open_sustain_fx ($<player_status>.text) out = scr_name
+	KillSpawnedScript id = <scr_name>
+	CheckNoteHoldEnd player = <player>
+	SetArrayElement ArrayName = currently_holding GlobalArray index = <index> newvalue = 0
 endscript
 
 script Open_NoteFX \{player = 1

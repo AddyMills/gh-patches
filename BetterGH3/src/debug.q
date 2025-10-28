@@ -175,8 +175,8 @@ script GlobalTags_UnlockAll \{songs_only = 0}
 	if (<songs_only> = 1)
 		SetGlobalTags <song_checksum> params = {unlocked = 1}
 	else
-		SetGlobalTags <song_checksum> params = {stars = 0
-			score = 0
+		SetGlobalTags <song_checksum> params = {stars = 3
+			score = 1000
 			unlocked = 1}
 		get_difficulty_text_nl difficulty = ($current_difficulty)
 		get_song_prefix song = ($<songlist>.<tier_checksum>.songs [<song_count>])
