@@ -79,17 +79,17 @@ script create_pause_menu \{player = 1
 		else
 			if (<for_options> = 0)
 				if (<for_practice> = 1)
-					<pause_player_text> = "PAUSED"
+					<pause_player_text> = $pause_paused
 				else
 					if NOT issingleplayergame
-						formattext textname = pause_player_text "P%d PAUSED" d = <player>
+						formattext textname = pause_player_text $pause_p_paused d = <player>
 					else
-						<pause_player_text> = "PAUSED"
+						<pause_player_text> = $pause_paused
 					endif
 				endif
 				pause_player_scale = (0.6, 0.75)
 			else
-				pause_player_text = "OPTIONS"
+				pause_player_text = $main_menu_options
 				pause_player_scale = (0.75, 0.75)
 			endif
 		endif
@@ -185,7 +185,7 @@ script create_pause_menu \{player = 1
 				scale = <text_scale>
 				rgba = [210 130 0 250]
 				id = pause_resume
-				text = "RESUME"
+				text = $pause_resume_text
 				just = [center top]
 				shadow
 				shadow_offs = (3.0, 3.0)
@@ -209,7 +209,7 @@ script create_pause_menu \{player = 1
 				font = fontgrid_title_gh3
 				scale = <text_scale>
 				rgba = [210 130 0 250]
-				text = "RESTART"
+				text = $pause_restart_text
 				id = pause_restart
 				just = [center top]
 				shadow
@@ -234,7 +234,7 @@ script create_pause_menu \{player = 1
 				font = fontgrid_title_gh3
 				scale = <text_scale>
 				rgba = [210 130 0 250]
-				text = "OPTIONS"
+				text = $main_menu_options
 				id = pause_options
 				just = [center top]
 				shadow
@@ -259,7 +259,7 @@ script create_pause_menu \{player = 1
 				font = fontgrid_title_gh3
 				scale = <text_scale>
 				rgba = [210 130 0 250]
-				text = "CHANGE SPEED"
+				text = $pause_change_speed_text
 				id = pause_change_speed
 				just = [center top]
 				shadow
@@ -284,7 +284,7 @@ script create_pause_menu \{player = 1
 				font = fontgrid_title_gh3
 				scale = <text_scale>
 				rgba = [210 130 0 250]
-				text = "CHANGE SECTION"
+				text = $pause_change_section_text
 				id = pause_change_section
 				just = [center top]
 				shadow
@@ -310,7 +310,7 @@ script create_pause_menu \{player = 1
 					font = fontgrid_title_gh3
 					scale = <text_scale>
 					rgba = [210 130 0 250]
-					text = "NEW SONG"
+					text = $pause_new_song_text
 					id = pause_new_song
 					just = [center top]
 					shadow
@@ -336,7 +336,7 @@ script create_pause_menu \{player = 1
 				font = fontgrid_title_gh3
 				scale = <text_scale>
 				rgba = [210 130 0 250]
-				text = "QUIT"
+				text = $pause_quit_text
 				id = pause_quit
 				just = [center top]
 				shadow
@@ -347,10 +347,10 @@ script create_pause_menu \{player = 1
 			}
 			getscreenelementdims id = <id>
 			fit_text_in_rectangle id = <id> dims = ((300.0, 0.0) + <height> * (0.0, 1.0)) only_if_larger_x = 1 start_x_scale = (<text_scale>.(1.0, 0.0)) start_y_scale = (<text_scale>.(0.0, 1.0))
-			add_user_control_helper \{text = "SELECT"
+			add_user_control_helper \{text = $buttons_select
 				button = green
 				z = 100000}
-			add_user_control_helper \{text = "UP/DOWN"
+			add_user_control_helper \{text = $buttons_up_down
 				button = strumbar
 				z = 100000}
 		else
@@ -373,7 +373,7 @@ script create_pause_menu \{player = 1
 				font = fontgrid_title_gh3
 				scale = <text_scale>
 				rgba = [210 130 0 250]
-				text = "RESUME"
+				text = $pause_resume_text
 				id = pause_resume
 				just = [center top]
 				shadow
@@ -400,7 +400,7 @@ script create_pause_menu \{player = 1
 						font = fontgrid_title_gh3
 						scale = <text_scale>
 						rgba = [210 130 0 250]
-						text = "RESTART"
+						text = $pause_restart_text
 						id = pause_restart
 						just = [center top]
 						shadow
@@ -431,7 +431,7 @@ script create_pause_menu \{player = 1
 							font = fontgrid_title_gh3
 							scale = <text_scale>
 							rgba = [210 130 0 250]
-							text = "PRACTICE"
+							text = $pause_practice_text
 							id = pause_practice
 							just = [center top]
 							shadow
@@ -458,7 +458,7 @@ script create_pause_menu \{player = 1
 						font = fontgrid_title_gh3
 						scale = <text_scale>
 						rgba = [210 130 0 250]
-						text = "OPTIONS"
+						text = $main_menu_options
 						id = pause_options
 						just = [center top]
 						shadow
@@ -496,7 +496,7 @@ script create_pause_menu \{player = 1
 				font = fontgrid_title_gh3
 				scale = <text_scale>
 				rgba = [210 130 0 250]
-				text = "QUIT"
+				text = $pause_quit_text
 				id = pause_quit
 				just = [center top]
 				shadow
@@ -522,7 +522,7 @@ script create_pause_menu \{player = 1
 					font = fontgrid_title_gh3
 					scale = <text_scale>
 					rgba = [210 130 0 250]
-					text = "DEBUG MENU"
+					text = $main_menu_debug_menu
 					id = pause_debug_menu
 					just = [center top]
 					shadow
@@ -532,10 +532,10 @@ script create_pause_menu \{player = 1
 					exclusive_device = <player_device>
 				}
 			endif
-			add_user_control_helper \{text = "SELECT"
+			add_user_control_helper \{text = $buttons_select
 				button = green
 				z = 100000}
-			add_user_control_helper \{text = "UP/DOWN"
+			add_user_control_helper \{text = $buttons_up_down
 				button = strumbar
 				z = 100000}
 		endif
@@ -558,7 +558,7 @@ script create_pause_menu \{player = 1
 			font = fontgrid_title_gh3
 			scale = <text_scale>
 			rgba = [210 130 0 250]
-			text = "SET AUDIO"
+			text = $pause_set_audio
 			id = options_audio
 			just = [center center]
 			shadow
@@ -586,7 +586,7 @@ script create_pause_menu \{player = 1
 			font = fontgrid_title_gh3
 			scale = <text_scale>
 			rgba = [210 130 0 250]
-			text = "CALIBRATE LAG"
+			text = $options_calibrate_lag_text
 			id = options_calibrate_lag
 			just = [center center]
 			shadow
@@ -615,7 +615,7 @@ script create_pause_menu \{player = 1
 				font = fontgrid_title_gh3
 				scale = <text_scale>
 				rgba = [210 130 0 250]
-				text = "CALIBRATE WHAMMY"
+				text = $pause_calibrate_whammy
 				id = options_calibrate_whammy
 				just = [center center]
 				shadow
@@ -628,12 +628,12 @@ script create_pause_menu \{player = 1
 			fit_text_in_rectangle id = <id> dims = (<fit_dims> + <height> * (0.0, 1.0)) only_if_larger_x = 1 start_x_scale = (<text_scale>.(1.0, 0.0)) start_y_scale = (<text_scale>.(0.0, 1.0))
 		endif
 		if issingleplayergame
-			lefty_flip_text = "LEFTY FLIP:"
+			lefty_flip_text = $pause_lefty_flip
 		else
 			if (<player> = 1)
-				lefty_flip_text = "P1 LEFTY FLIP:"
+				lefty_flip_text = $pause_p1_lefty_flip
 			else
-				lefty_flip_text = "P2 LEFTY FLIP:"
+				lefty_flip_text = $pause_p2_lefty_flip
 			endif
 		endif
 		createscreenelement {
@@ -687,20 +687,20 @@ script create_pause_menu \{player = 1
 		}
 		getscreenelementdims \{id = pause_options_lefty}
 		<id> :setprops pos = (<width> * (0.5, 0.0) + (22.0, 0.0))
-		add_user_control_helper \{text = "SELECT"
+		add_user_control_helper \{text = $buttons_select
 			button = green
 			z = 100000}
-		add_user_control_helper \{text = "BACK"
+		add_user_control_helper \{text = $buttons_back
 			button = red
 			z = 100000}
-		add_user_control_helper \{text = "UP/DOWN"
+		add_user_control_helper \{text = $buttons_up_down
 			button = strumbar
 			z = 100000}
 	endif
 	if ($is_network_game = 0)
 		if NOT issingleplayergame
 			if (<for_practice> = 0)
-				formattext textname = player_paused_text "PLAYER %d PAUSED. ONLY PLAYER %d OPTIONS ARE AVAILABLE." d = <player>
+				formattext textname = player_paused_text $pause_player_paused_options d = <player>
 				displaysprite {
 					parent = pause_menu_frame_container
 					id = pause_helper_text_bg

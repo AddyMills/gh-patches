@@ -1,12 +1,12 @@
 // Turn the audio lag reminder into a resolution set reminder
 script winport_create_audio_calibrate_reminder 
-	WinPortGetConfigNumber \{name = "AudioLagReminderShown"
+	WinPortGetConfigNumber \{name = $boot_flow_audiolagremindershown
 		defaultValue = 0}
 	if (<value> = 1)
 		ui_flow_manager_respond_to_action \{action = continue}
 		return
 	endif
-	WinPortSetConfigNumber \{name = "AudioLagReminderShown"
+	WinPortSetConfigNumber \{name = $boot_flow_audiolagremindershown
 		value = 1}
 	z = 100
 	CreateScreenElement \{type = ContainerElement
@@ -53,14 +53,14 @@ script winport_create_audio_calibrate_reminder
 		<textProps>
 		pos = (640.0, 270.0)
 		dims = (500.0, 500.0)
-		text = "By default, Guitar Hero III sets the resolution to 1024x768"
+		text = $boot_flow_default_resolution
 		scale = 0.8
 	}
 	CreateScreenElement {
 		<textProps>
 		pos = (640.0, 420.0)
 		dims = (650.0, 500.0)
-		text = "Head to Options > Graphics and set the resolution to match your display"
+		text = $boot_flow_set_resolution_display
 		scale = 0.7
 	}
 	spawnscriptnow \{check_for_any_input

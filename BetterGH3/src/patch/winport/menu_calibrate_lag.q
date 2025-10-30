@@ -78,7 +78,7 @@ script create_calibrate_lag_dialog_menu
 		options = [
 			{
 				func = {ui_flow_manager_respond_to_action params = {action = continue}}
-				text = "CONTINUE"
+				text = $menu_calibrate_lag_continue
 				scale = (1.0, 1.0)
 			}
 		]
@@ -148,13 +148,13 @@ script create_calibrate_lag_menu \{from_in_game = 1}
 			180
 			255
 		]}
-	add_user_control_helper \{text = "SELECT"
+	add_user_control_helper \{text = $buttons_select
 		button = green
 		z = 100}
-	add_user_control_helper \{text = "BACK"
+	add_user_control_helper \{text = $buttons_back
 		button = red
 		z = 100}
-	add_user_control_helper \{text = "UP/DOWN"
+	add_user_control_helper \{text = $buttons_up_down
 		button = strumbar
 		z = 100}
 	if ($calibrate_lag_section = none)
@@ -264,7 +264,7 @@ script create_calibrate_background
 		rot_angle = 8
 	}
 	displaytext \{parent = cl_container
-		text = "HDTV LAG"
+		text = $menu_calibrate_lag_hdtv_lag
 		pos = (770.0, 80.0)
 		font = fontgrid_title_gh3
 		rgba = [
@@ -274,7 +274,7 @@ script create_calibrate_background
 			255
 		]
 		noshadow}
-	upper_helper = "Some PC setups have an audio/video delay that makes playing difficult. If you're ready to blame the lag, try calibrating.\\n\\nAdjust the Audio offset until your hits in time with the audio are centered, adjust the Video offset until the audio and video are in sync."
+	upper_helper = $menu_calibrate_lag_pc_setups
 	createscreenelement {
 		type = textblockelement
 		parent = cl_container
@@ -332,7 +332,7 @@ script calibrate_lag_fill_options \{z = 100}
 	createscreenelement {
 		<text_params>
 		id = calibrate_reset_option
-		text = "RESET"
+		text = $menu_calibrate_lag_reset
 		event_handlers = [
 			{focus menu_calibrate_focus params = {index = 1}}
 			{unfocus menu_calibrate_unfocus params = {index = 1}}
@@ -470,9 +470,9 @@ script calibrate_lag_update_text
 	getglobaltags \{user_options}
 	casttointeger \{lag_audio}
 	casttointeger \{lag_video}
-	formattext textname = lag_value_text "Audio: %d ms" d = <lag_audio>
+	formattext textname = lag_value_text $menu_calibrate_lag_audio_ms d = <lag_audio>
 	lag_offset_text_audio :setprops text = <lag_value_text>
-	formattext textname = lag_value_text "Video: %d ms" d = <lag_video>
+	formattext textname = lag_value_text $menu_calibrate_lag_video_ms d = <lag_video>
 	lag_offset_text :setprops text = <lag_value_text>
 endscript
 

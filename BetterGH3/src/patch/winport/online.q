@@ -75,7 +75,7 @@ script create_winport_account_management_status_screen
 			223
 			250
 		]
-		text = "Online"
+		text = $online_online
 		just = [
 			center
 			top
@@ -110,79 +110,79 @@ script create_winport_account_management_status_screen
 	begin
 	netsessionfunc \{func = getnetworkstatus}
 	switch (<currentnetworktask>)
-		case "CREATE_ACCOUNT"
+		case $online_create_account
 		switch (<currentnetworkstatus>)
-			case "PENDING"
-			statustext = "Requesting Account Creation..."
-			case "DONE"
-			statustext = "Account Created"
+			case $online_pending
+			statustext = $online_requesting_account_creation
+			case $online_done
+			statustext = $online_account_created
 			success = true
-			case "FAILED"
-			statustext = "Unable to Create Account"
+			case $online_failed
+			statustext = $online_unable_create_account
 			success = false
 			default
-			statustext = "Internal Error: Unexpected Network State!"
+			statustext = $online_internal_error
 			success = false
 		endswitch
-		case "LOGIN_ACCOUNT"
+		case $online_login_account
 		switch (<currentnetworkstatus>)
-			case "PENDING"
-			statustext = "Authorizing Account..."
-			case "DONE"
-			statustext = "Account Authorized"
+			case $online_pending
+			statustext = $online_authorizing_account
+			case $online_done
+			statustext = $online_account_authorized
 			success = true
-			case "FAILED"
-			statustext = "Unable to Authorize Account"
+			case $online_failed
+			statustext = $online_unable_authorize_account
 			success = false
 			default
-			statustext = "Internal Error: Unexpected Network State!"
+			statustext = $online_internal_error
 			success = false
 		endswitch
-		case "CHANGE_ACCOUNT"
+		case $online_change_account
 		switch (<currentnetworkstatus>)
-			case "PENDING"
-			statustext = "Requesting Password Change..."
-			case "DONE"
-			statustext = "Password Changed"
+			case $online_pending
+			statustext = $online_requesting_password_change
+			case $online_done
+			statustext = $online_password_changed
 			success = true
-			case "FAILED"
-			statustext = "Unable to Change Password"
+			case $online_failed
+			statustext = $online_unable_change_password
 			success = false
 			default
-			statustext = "Internal Error: Unexpected Network State!"
+			statustext = $online_internal_error
 			success = false
 		endswitch
-		case "RESET_ACCOUNT"
+		case $online_reset_account
 		switch (<currentnetworkstatus>)
-			case "PENDING"
-			statustext = "Requesting Account Reset..."
-			case "DONE"
-			statustext = "Account Password Reset"
+			case $online_pending
+			statustext = $online_requesting_account_reset
+			case $online_done
+			statustext = $online_account_password_reset
 			success = true
-			case "FAILED"
-			statustext = "Unable to Reset Account"
+			case $online_failed
+			statustext = $online_unable_reset_account
 			success = false
 			default
-			statustext = "Internal Error: Unexpected Network State!"
+			statustext = $online_internal_error
 			success = false
 		endswitch
-		case "DELETE_ACCOUNT"
+		case $online_delete_account
 		switch (<currentnetworkstatus>)
-			case "PENDING"
-			statustext = "Requesting Account Deletion..."
-			case "DONE"
-			statustext = "Account Deleted"
+			case $online_pending
+			statustext = $online_requesting_account_deletion
+			case $online_done
+			statustext = $online_account_deleted
 			success = true
-			case "FAILED"
-			statustext = "Unable to Delete Account"
+			case $online_failed
+			statustext = $online_unable_delete_account
 			success = false
 			default
-			statustext = "Internal Error: Unexpected Network State!"
+			statustext = $online_internal_error
 			success = false
 		endswitch
 		default
 		printf "Unexpected state = %s" s = <currentnetworktask>
-		statustext = "Internal Error: Unexpected Network State!"
+		statustext = $online_internal_error
 		success = false
 	endswitch
 	setscreenelementprops id = statusmessage text = <statustext>
@@ -208,47 +208,47 @@ script create_winport_account_management_status_screen
 		netsessionfunc \{func = getfailurecode}
 		switch <failurecode>
 			case 666
-			statustext = "New password fields do not match"
+			statustext = $online_password_fields_match
 			case 667
-			statustext = "Authorization Service failed"
+			statustext = $online_authorization_failed
 			case 668
-			statustext = "Usernames must be between 6 and 16 characters long"
+			statustext = $online_username_length
 			case 669
-			statustext = "Passwords must be between 6 and 16 characters long"
+			statustext = $online_password_length
 			case 700
-			statustext = "Task Succeeded"
+			statustext = $online_task_succeeded
 			case 701
-			statustext = "Bad Authorization Request"
+			statustext = $online_bad_authorization
 			case 702
-			statustext = "Server Configuration Error"
+			statustext = $online_server_configuration
 			case 703
-			statustext = "Invalid Game Title Id"
+			statustext = $online_invalid_title_id
 			case 704
-			statustext = "Invalid Account Information"
+			statustext = $online_invalid_account
 			case 705
-			statustext = "Illegal Authorization Request"
+			statustext = $online_illegal_authorization
 			case 706
-			statustext = "Invalid License Code"
+			statustext = $online_invalid_license
 			case 707
-			statustext = "Username Already Exists"
+			statustext = $online_username_exists
 			case 708
-			statustext = "Invalid Username Format"
+			statustext = $online_invalid_username
 			case 709
-			statustext = "Username Declined"
+			statustext = $online_username_declined
 			case 710
-			statustext = "Too Many Accounts for License Code"
+			statustext = $online_too_many_accounts
 			case 711
-			statustext = "Account Migration not Supported"
+			statustext = $online_migration_not_supported
 			case 712
-			statustext = "Title has been disabled"
+			statustext = $online_title_disabled
 			case 713
-			statustext = "Account has Expired"
+			statustext = $online_account_expired
 			case 714
-			statustext = "Account is Locked"
+			statustext = $online_account_locked
 			case 715
-			statustext = "Authentication Error: Online functions will not be available until Guitar Hero III is quit and relaunched."
+			statustext = $online_authentication_error
 			case 716
-			statustext = "Incorrect Password"
+			statustext = $online_incorrect_password
 		endswitch
 		setscreenelementprops id = statusmessage text = <statustext>
 		fit_text_into_menu_item \{id = statusmessage
@@ -293,7 +293,7 @@ script create_winport_account_management_status_screen
 			font = fontgrid_title_gh3
 			scale = 0.85
 			rgba = ($menu_unfocus_color)
-			text = "TRY AGAIN"
+			text = $online_try_again
 			just = [center top]
 			z_priority = (<z> + 0.1)
 		}
@@ -323,10 +323,10 @@ script create_winport_account_management_status_screen
 			scale = (1.0, 1.0)
 		}
 		clean_up_user_control_helpers
-		add_user_control_helper \{text = "SELECT"
+		add_user_control_helper \{text = $buttons_select
 			button = green
 			z = 100}
-		add_user_control_helper \{text = "BACK"
+		add_user_control_helper \{text = $buttons_back
 			button = red
 			z = 100}
 		launchevent type = focus target = <vmenu_id>
@@ -411,7 +411,7 @@ script create_winport_connection_status_screen
 			223
 			250
 		]
-		text = "Online"
+		text = $online_online
 		just = [
 			center
 			top
@@ -442,7 +442,7 @@ script create_winport_connection_status_screen
 		line_spacing = 1.0
 	}
 	if NOT (NetSessionFunc func = IsConnected)
-		add_user_control_helper \{text = "CANCEL"
+		add_user_control_helper \{text = $online_cancel
 			button = red
 			z = 100}
 		LaunchEvent type = focus target = <vmenu_id>
@@ -450,35 +450,35 @@ script create_winport_connection_status_screen
 		begin
 		NetSessionFunc \{func = GetNetworkStatus}
 		switch (<CurrentNetworkTask>)
-			case "START_NETWORK"
+			case $online_start_network
 			switch (<CurrentNetworkStatus>)
-				case "PENDING"
-				statusText = "Connecting to network..."
-				case "DONE"
-				statusText = "Connected to network!"
-				case "FAILED"
-				statusText = "Unable to connect to the internet\\n\\nTry allowing Guitar Hero III through Firewall"
+				case $online_pending
+				statusText = $online_connecting_network
+				case $online_done
+				statusText = $online_connected_network
+				case $online_failed
+				statusText = $online_unable_connect_internet
 				success = false
 				default
-				statusText = "Internal Error: Unexpected Network State!"
+				statusText = $online_internal_error
 				success = false
 			endswitch
-			case "CHECK_DNS"
+			case $online_check_dns
 			switch (<CurrentNetworkStatus>)
-				case "PENDING"
-				statusText = "Connecting to game servers..."
-				case "DONE"
-				statusText = "Connected to game servers"
+				case $online_pending
+				statusText = $online_connecting_game_servers
+				case $online_done
+				statusText = $online_connected_game_servers
 				success = true
-				case "FAILED"
-				statusText = "Unable to connect to game servers\\n\\nThe servers are either unavailable or down for maintenance"
+				case $online_failed
+				statusText = $online_unable_connect_servers
 				success = false
 				default
-				statusText = "Internal Error: Unexpected Network State!"
+				statusText = $online_internal_error
 				success = false
 			endswitch
 			default
-			statusText = "Internal Error: Unexpected Network State!"
+			statusText = $online_internal_error
 			success = false
 		endswitch
 		SetScreenElementProps id = statusMessage text = <statusText>
@@ -487,7 +487,7 @@ script create_winport_connection_status_screen
 		if GotParam \{success}
 			clean_up_user_control_helpers
 			if (<success> = false)
-				add_user_control_helper \{text = "BACK"
+				add_user_control_helper \{text = $buttons_back
 					button = red
 					z = 100}
 				return
@@ -503,7 +503,7 @@ script create_winport_connection_status_screen
 	endif
 	if NOT (NetSessionFunc func = HasExistingLogin)
 		SetScreenElementProps \{id = statusMessage
-			text = "Create an account at\\nwiki.aiwarehouse.xyz/en/gh3-pc-guide\\nThen come back here and log in"}
+			text = $online_create_account_guide}
 		fit_text_into_menu_item \{id = statusMessage
 			max_width = 480}
 		displaySprite \{parent = connectionStatusContainer
@@ -546,7 +546,7 @@ script create_winport_connection_status_screen
 			font = fontgrid_title_gh3
 			scale = 0.85
 			rgba = ($menu_unfocus_color)
-			text = "LOG IN"
+			text = $online_log_in
 			just = [center top]
 			z_priority = (<z> + 0.1)
 		}
@@ -575,13 +575,13 @@ script create_winport_connection_status_screen
 			z_priority = (<z> + 0.1)
 			scale = (1.0, 1.0)
 		}
-		add_user_control_helper \{text = "SELECT"
+		add_user_control_helper \{text = $buttons_select
 			button = green
 			z = 100}
-		add_user_control_helper \{text = "BACK"
+		add_user_control_helper \{text = $buttons_back
 			button = red
 			z = 100}
-		add_user_control_helper \{text = "UP/DOWN"
+		add_user_control_helper \{text = $buttons_up_down
 			button = strumbar
 			z = 100}
 		LaunchEvent type = focus target = <vmenu_id>

@@ -98,7 +98,7 @@ script create_main_menu
 		type = textelement
 		id = main_menu_career_text
 		parent = main_menu_text_container
-		text = "CAREER"
+		text = $main_menu_career
 		font = <main_menu_font>
 		pos = {(<career_text_off>) relative}
 		scale = (<career_text_scale>)
@@ -120,7 +120,7 @@ script create_main_menu
 		type = textelement
 		id = main_menu_coop_career_text
 		parent = main_menu_text_container
-		text = "CO-OP CAREER"
+		text = $main_menu_coop_career
 		font = <main_menu_font>
 		pos = {(<coop_career_text_off>) relative}
 		scale = (<coop_career_text_scale>)
@@ -143,7 +143,7 @@ script create_main_menu
 		id = main_menu_quickplay_text
 		parent = main_menu_text_container
 		font = <main_menu_font>
-		text = "QUICKPLAY"
+		text = $main_menu_quickplay
 		font_spacing = 0
 		pos = {(<quickplay_text_off>) relative}
 		scale = (<quickplay_text_scale>)
@@ -164,7 +164,7 @@ script create_main_menu
 		id = main_menu_multiplayer_text
 		parent = main_menu_text_container
 		font = <main_menu_font>
-		text = "MULTIPLAYER"
+		text = $main_menu_multiplayer
 		font_spacing = 1
 		pos = {(<multiplayer_text_off>) relative}
 		scale = (<multiplayer_text_scale>)
@@ -185,7 +185,7 @@ script create_main_menu
 		id = main_menu_training_text
 		parent = main_menu_text_container
 		font = <main_menu_font>
-		text = "TRAINING"
+		text = $main_menu_training
 		font_spacing = 0
 		pos = {(<training_text_off>) relative}
 		scale = (<training_text_scale>)
@@ -214,7 +214,7 @@ script create_main_menu
 			id = main_menu_leaderboards_text
 			parent = main_menu_text_container
 			font = <main_menu_font>
-			text = "ONLINE"
+			text = $main_menu_online
 			font_spacing = 0
 			pos = {(<leaderboards_text_off>) relative}
 			scale = (<leaderboards_text_scale>)
@@ -237,7 +237,7 @@ script create_main_menu
 			id = main_menu_leaderboards_text
 			parent = main_menu_text_container
 			font = <main_menu_font>
-			text = "ONLINE"
+			text = $main_menu_online
 			font_spacing = 0
 			pos = {(<leaderboards_text_off>) relative}
 			scale = (<leaderboards_text_scale>)
@@ -260,7 +260,7 @@ script create_main_menu
 		id = main_menu_options_text
 		parent = main_menu_text_container
 		font = <main_menu_font>
-		text = "OPTIONS"
+		text = $main_menu_options
 		font_spacing = 0
 		pos = {(<options_text_off>) relative}
 		scale = (<options_text_scale>)
@@ -281,7 +281,7 @@ script create_main_menu
 		id = main_menu_exit_text
 		parent = main_menu_text_container
 		font = <main_menu_font>
-		text = "EXIT"
+		text = $main_menu_exit_description
 		font_spacing = 0
 		pos = {(<exit_text_off>) relative}
 		scale = (<exit_text_scale>)
@@ -303,7 +303,7 @@ script create_main_menu
 			id = main_menu_debug_menu_text
 			parent = main_menu_text_container
 			font = <main_menu_font>
-			text = "DEBUG MENU"
+			text = $main_menu_debug_menu
 			pos = {(<debug_menu_text_off>) relative}
 			scale = (<debug_menu_text_scale>)
 			rgba = ($menu_text_color)
@@ -570,7 +570,7 @@ script create_main_menu
 		type = textelement
 		parent = vmenu_main_menu
 		font = <main_menu_font>
-		text = "Exit placeholder"
+		text = $main_menu_exit_placeholder
 		event_handlers = [
 			{focus retail_menu_focus params = {id = main_menu_exit_text}}
 			{focus setscreenelementprops params = {id = main_menu_exit_text no_shadow}}
@@ -627,10 +627,10 @@ script create_main_menu
 			180
 			255
 		]}
-	add_user_control_helper \{text = "SELECT"
+	add_user_control_helper \{text = $buttons_select
 		button = green
 		z = 100}
-	add_user_control_helper \{text = "UP/DOWN"
+	add_user_control_helper \{text = $buttons_up_down
 		button = strumbar
 		z = 100}
 	if NOT ($invite_controller = -1)

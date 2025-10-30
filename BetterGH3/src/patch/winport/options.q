@@ -36,8 +36,8 @@ script create_options_menu
 	if ((german) || (spanish))
 		titlescale = 1.5
 	endif
-	displaytext parent = om_container text = "OPTIONS" pos = (733.0, 110.0) scale = <titlescale> just = [center center] rgba = [50 0 0 255] font = text_a11_large z = 10 rot = (<rot> -3) noshadow
-	displaytext parent = om_container text = "OPTIONS" pos = (728.0, 115.0) scale = <titlescale> just = [center center] rgba = [160 130 105 255] font = text_a11_large z = 9 rot = (<rot> -2) noshadow
+	displaytext parent = om_container text = $main_menu_options pos = (733.0, 110.0) scale = <titlescale> just = [center center] rgba = [50 0 0 255] font = text_a11_large z = 10 rot = (<rot> -3) noshadow
+	displaytext parent = om_container text = $main_menu_options pos = (728.0, 115.0) scale = <titlescale> just = [center center] rgba = [160 130 105 255] font = text_a11_large z = 9 rot = (<rot> -2) noshadow
 	displaysprite parent = om_container id = options_monster tex = options_main_monster pos = (735.0, 320.0) dims = (256.0, 512.0) z = 15 just = [center center] rot_angle = <rot>
 	runscriptonscreenelement \{id = options_monster
 		anim_float}
@@ -45,7 +45,7 @@ script create_options_menu
 	createscreenelement {
 		<text_params>
 		id = om_text_1
-		text = "AUDIO"
+		text = $options_audio_text
 		pos = (501.0, 140.0)
 		scale = 0.6
 		event_handlers = [
@@ -66,7 +66,7 @@ script create_options_menu
 	createscreenelement {
 		<text_params>
 		id = om_text_2
-		text = "GRAPHICS"
+		text = $options_graphics
 		pos = (507.0, 184.0)
 		scale = 0.85
 		event_handlers = [
@@ -87,7 +87,7 @@ script create_options_menu
 	createscreenelement {
 		<text_params>
 		id = om_text_3
-		text = "CALIBRATE LAG"
+		text = $options_calibrate_lag_text
 		pos = (503.0, 225.0)
 		scale = 0.6
 		event_handlers = [
@@ -108,7 +108,7 @@ script create_options_menu
 	createscreenelement {
 		<text_params>
 		id = om_text_4
-		text = "CONTROLLER"
+		text = $options_controller
 		pos = (497.0, 263.0)
 		scale = 0.6
 		event_handlers = [
@@ -129,7 +129,7 @@ script create_options_menu
 	createscreenelement {
 		<text_params>
 		id = om_text_5
-		text = "MANAGE BAND"
+		text = $options_manage_band
 		pos = (498.0, 307.0)
 		scale = 0.7
 		event_handlers = [
@@ -155,7 +155,7 @@ script create_options_menu
 	createscreenelement {
 		<text_params>
 		id = om_text_6
-		text = "SAVE / LOAD"
+		text = $options_save_load
 		pos = (500.0, 354.0)
 		scale = 0.8
 		event_handlers = [
@@ -182,7 +182,7 @@ script create_options_menu
 	createscreenelement {
 		<text_params>
 		id = om_text_7
-		text = "VIDEOS"
+		text = $options_videos
 		pos = (490.0, 400.0)
 		scale = 0.9
 		event_handlers = [
@@ -204,7 +204,7 @@ script create_options_menu
 	createscreenelement {
 		<text_params>
 		id = om_text_8
-		text = "THE STORE"
+		text = $options_the_store
 		pos = (485.0, 440.0)
 		scale = 0.6
 		event_handlers = [
@@ -226,7 +226,7 @@ script create_options_menu
 	createscreenelement {
 		<text_params>
 		id = om_text_9
-		text = "TOP ROCKERS"
+		text = $options_top_rockers
 		pos = (490.0, 487.0)
 		scale = 0.8
 		event_handlers = [
@@ -247,7 +247,7 @@ script create_options_menu
 	createscreenelement {
 		<text_params>
 		id = om_text_10
-		text = "CHEATS"
+		text = $cheats_cheats
 		pos = (480.0, 527.0)
 		scale = 0.6
 		event_handlers = [
@@ -268,7 +268,7 @@ script create_options_menu
 	createscreenelement {
 		<text_params>
 		id = om_text_11
-		text = "AUTOMATIC LOGIN"
+		text = $options_automatic_login
 		pos = (480.0, 560.0)
 		scale = 0.5
 		event_handlers = [
@@ -343,13 +343,13 @@ script create_options_menu
 			180
 			255
 		]}
-	add_user_control_helper \{text = "SELECT"
+	add_user_control_helper \{text = $buttons_select
 		button = green
 		z = 100}
-	add_user_control_helper \{text = "BACK"
+	add_user_control_helper \{text = $buttons_back
 		button = red
 		z = 100}
-	add_user_control_helper \{text = "UP/DOWN"
+	add_user_control_helper \{text = $buttons_up_down
 		button = strumbar
 		z = 100}
 endscript

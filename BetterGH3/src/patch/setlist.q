@@ -29,7 +29,7 @@ script display_as_made_famous_by \{rot_angle = -7
 	}
 	displayText {
 		parent = setlist_original_artist
-		text = "AS MADE"
+		text = $setlist_as_made
 		font = text_a3
 		just = [center top]
 		Pos = (<Pos>)
@@ -41,7 +41,7 @@ script display_as_made_famous_by \{rot_angle = -7
 	fit_text_in_rectangle id = <id> dims = (75.0, 15.0)
 	displayText {
 		parent = setlist_original_artist
-		text = "FAMOUS BY"
+		text = $setlist_famous_by
 		just = [center top]
 		font = text_a3
 		Pos = (<Pos> + (0.0, 25.0))
@@ -94,7 +94,7 @@ script create_as_made_famous_by
 		z = 501}
 	displayText \{parent = setlist_original_artist
 		id = sl_oa_asmade
-		text = "AS MADE"
+		text = $setlist_as_made
 		font = text_a3
 		just = [
 			center
@@ -113,7 +113,7 @@ script create_as_made_famous_by
 	fit_text_in_rectangle id = <id> dims = (75.0, 15.0)
 	displayText \{parent = setlist_original_artist
 		id = sl_oa_famousby
-		text = "FAMOUS BY"
+		text = $setlist_famous_by
 		just = [
 			center
 			top
@@ -317,7 +317,7 @@ script create_sl_assets
 	if gotparam \{tab_downloads}
 		displaytext \{parent = setlist_menu
 			id = sl_text_1
-			text = "DOWNLOADED SONGS"
+			text = $setlist_downloaded_songs
 			font = text_a10
 			scale = 2
 			pos = (330.0, 220.0)
@@ -334,7 +334,7 @@ script create_sl_assets
 	if gotparam \{tab_bonus}
 		displaytext \{parent = setlist_menu
 			id = sl_text_1
-			text = "BONUS SONGS"
+			text = $setlist_bonus_songs
 			font = text_a10
 			scale = 2
 			pos = (330.0, 220.0)
@@ -449,10 +449,10 @@ script create_sl_assets
 							if progression_isbosssong tier_global = $g_gh3_setlist tier = <tier> song = ($g_gh3_setlist.<tier_checksum>.songs [<song_count>])
 								if (<score> = 1)
 									formattext \{textname = score_text
-										"WUSSED OUT"}
+										$setlist_wussed_out}
 								else
 									formattext \{textname = score_text
-										"BATTLE WON"}
+										$setlist_battle_won}
 								endif
 							else
 								formattext textname = score_text "%d" d = <score> usecommas
@@ -494,13 +494,13 @@ script create_sl_assets
 					getglobaltags <tiername> param = encore_unlocked
 					if (<encore_unlocked> = 1)
 						formattext \{textname = completetext
-							"Beat encore song to continue"}
+							$setlist_beat_encore_song}
 					elseif (<boss_unlocked> = 1)
 						formattext \{textname = completetext
-							"Beat boss song to continue"}
+							$setlist_beat_boss_song}
 					else
 						getglobaltags <tiername> param = num_songs_to_progress
-						formattext textname = completetext "Beat %d of %p songs to continue" d = <num_songs_to_progress> p = <num_songs_unlocked>
+						formattext textname = completetext $setlist_beat_songs_continue d = <num_songs_to_progress> p = <num_songs_unlocked>
 					endif
 					displaytext parent = setlist_menu scale = (0.6, 0.6) text = <completetext> pos = (<text_pos> + (160.0, 0.0)) z = $setlist_text_z rgba = [30 30 30 255] noshadow
 				endif
@@ -511,7 +511,7 @@ script create_sl_assets
 	if ((($game_mode = p1_career) || ($game_mode = p2_career)) && $is_demo_mode = 0)
 		get_progression_globals game_mode = ($game_mode)
 		summation_career_score tier_global = <tier_global>
-		formattext textname = total_score_text "Career Score: %d" d = <career_score> usecommas
+		formattext textname = total_score_text $setlist_career_score d = <career_score> usecommas
 		displaytext {
 			parent = setlist_menu
 			scale = 0.7
@@ -561,16 +561,16 @@ script create_sl_assets
 	elseif ($current_tab = tab_bonus)
 		setlist_show_helperbar {
 			pos = (<bg_helper_pos> + (64.0, 4.0))
-			text_option1 = "SETLIST"
-			text_option2 = "DOWNLOADS"
+			text_option1 = $setlist_setlist
+			text_option2 = $setlist_downloads
 			button_option1 = "\\b6"
 			button_option2 = "\\b8"
 		}
 	else
 		setlist_show_helperbar {
 			pos = (<bg_helper_pos> + (64.0, 4.0))
-			text_option1 = "SETLIST"
-			text_option2 = "BONUS"
+			text_option1 = $setlist_setlist
+			text_option2 = $setlist_bonus
 			button_option1 = "\\b6"
 			button_option2 = "\\b7"
 		}
