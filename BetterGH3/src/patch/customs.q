@@ -66,6 +66,29 @@ script Downloads_EnumContent
 	Downloads_PostEnumContent
 endscript
 
+script Downloads_LoadLanguageContent 
+	pakname = 'customs_text.pak'
+	if French
+		pakname = 'customs_text_f.pak'
+	elseif Italian
+		pakname = 'customs_text_i.pak'
+	elseif German
+		pakname = 'customs_text_g.pak'
+	elseif Spanish
+		pakname = 'customs_text_s.pak'
+	endif
+	EnableDuplicateSymbolWarning \{off}
+	if NOT LoadPakAsync pak_name = <pakname> heap = heap_downloads async = 1
+		EnableDuplicateSymbolWarning
+		mark_safe_for_shutdown
+		DownloadContentLost
+		return
+	endif
+	EnableDuplicateSymbolWarning
+	change global_content_index_pak_language = <pakname>
+	mark_safe_for_shutdown
+endscript
+
 bootup_audio_calibrate_reminder_fs = {
 	create = winport_create_audio_calibrate_reminder
 	destroy = winport_destroy_audio_calibrate_reminder
