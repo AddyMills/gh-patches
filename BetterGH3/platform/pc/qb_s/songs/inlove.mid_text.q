@@ -1,0 +1,7 @@
+inlove_markers_text_66d5945e = "Riff de amor 1"
+inlove_markers_text_10dff053 = "Pre-solo 1"
+inlove_markers_text_c85c2953 = "Estribillo 1"
+inlove_markers_text_ffdcc5e4 = "Riff de amor 2"
+inlove_markers_text_515578e9 = "Estribillo 2"
+inlove_markers_text_9687f060 = "Puente"
+inlove_markers_text_eda21fe1 = "Final"

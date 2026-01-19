@@ -1,0 +1,7 @@
+inlove_markers_text_66d5945e = "Riff de l'amour 1"
+inlove_markers_text_10dff053 = "Pré-refrain 1"
+inlove_markers_text_c85c2953 = "Refrain 1"
+inlove_markers_text_ffdcc5e4 = "Riff de l'amour 2"
+inlove_markers_text_515578e9 = "Refrain 2"
+inlove_markers_text_9687f060 = "Pont"
+inlove_markers_text_eda21fe1 = "Finale"

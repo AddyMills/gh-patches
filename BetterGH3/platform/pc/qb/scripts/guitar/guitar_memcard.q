@@ -2,13 +2,13 @@ max_memcard_filename_length = 15
 SavingOrLoading = Saving
 memcard_using_new_save_system = 1
 memcard_default_title = 'Guitar Hero III: Legends of Rock'
-memcard_content_name = "Honeycomb"
+memcard_content_name = "Progress"
 memcard_file_name = "GH3Progress"
 memcard_file_types = [
 	{
 		name = Progress
 		version = 48
-		fixed_size = 2097152
+		fixed_size = 262144
 		menu_text = "GAME PROGRESS"
 		menu_icon = logo_cas
 		use_temp_pools = true
