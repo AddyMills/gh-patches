@@ -414,6 +414,7 @@ script gem_scroller \{player = 1
 	<gem_offset> = (<gem_offset> - <lag_audio> + <lag_video>)
 	<input_offset> = (<input_offset> - <lag_audio>)
 	change default_drums_offset = ($default_drums_offset + <lag_audio>)
+	Change clap_offset = ($default_drums_offset - 69 - (<lag_audio> * 2))
 
 	if (<training_mode> = 0)
 		spawnscriptlater strum_iterator params = {song_name = <song_name> difficulty = expert
@@ -590,3 +591,23 @@ script call_startup_scripts
 	endif
 	spawnscriptnow ($current_startup_script) params = {<...>}
 endscript
+
+clap_offset = 0
+
+// Restore claps
+script guitarevent_prefretbar
+	Wait \{$clap_offset
+		milliseconds}
+	if ($<player_status>.star_power_used = 1)
+		if ($game_mode != tutorial)
+			printf \{channel = sfx
+				"Clap"}
+			soundevent \{event = crowd_individual_clap_to_beat}
+		endif
+	else
+		if ($crowdlistenerstateclapon1234 = 1)
+			soundevent \{event = crowd_individual_clap_to_beat}
+		endif
+	endif
+endscript
+

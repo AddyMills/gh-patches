@@ -2,7 +2,7 @@ max_memcard_filename_length = 15
 SavingOrLoading = Saving
 memcard_using_new_save_system = 1
 memcard_default_title = 'Guitar Hero III: Legends of Rock'
-memcard_content_name = "Honeycomb"
+memcard_content_name = "BetterGH3"
 memcard_file_name = "GH3Progress"
 memcard_file_types = [
 	{

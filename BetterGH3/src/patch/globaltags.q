@@ -100,4 +100,10 @@ script restore_options_from_global_tags
 		winportsetsongskew value = 0
 	endif
 
+	// Always mark calibration reminder as seen
+	if iswinport
+		WinPortSetConfigNumber \{name = $boot_flow_audiolagremindershown
+			value = 1}
+	endif
+
 endscript
