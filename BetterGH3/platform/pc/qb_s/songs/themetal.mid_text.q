@@ -1,0 +1,7 @@
+themetal_markers_text_e5fa3adf = "Introducción"
+themetal_markers_text_c5cccaf7 = "Estrofa 1"
+themetal_markers_text_1c1a2ba4 = "Puente 1"
+themetal_markers_text_3abdeb66 = "Estribillo/Medio 8"
+themetal_markers_text_5cc59b4d = "Estrofa 2"
+themetal_markers_text_a26b5fdb = "Breakdown infernal"
+themetal_markers_text_eda21fe1 = "Final"

@@ -1,0 +1,7 @@
+themetal_markers_text_e5fa3adf = "Intro"
+themetal_markers_text_c5cccaf7 = "Couplet 1"
+themetal_markers_text_1c1a2ba4 = "Pont 1"
+themetal_markers_text_3abdeb66 = "Refrain / Moyen 8"
+themetal_markers_text_5cc59b4d = "Couplet 2"
+themetal_markers_text_a26b5fdb = "Breakdown infernal"
+themetal_markers_text_eda21fe1 = "Finale"

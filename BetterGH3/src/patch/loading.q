@@ -1,12 +1,8 @@
 // Remove old calibration tip from PC
 loading_screen_tips = [
 	$loading_tip_1
-	$loading_tip_1
-	$loading_tip_2
 	$loading_tip_2
 	$loading_tip_3
-	$loading_tip_3
-	$loading_tip_4
 	$loading_tip_4
 	$loading_tip_5
 	$loading_tip_6
@@ -36,8 +32,4 @@ loading_screen_tips = [
 	$loading_tip_30
 	$loading_tip_31
 	$loading_tip_32
-	$loading_tip_33
-	$loading_tip_34
-	$loading_tip_35
-	$loading_tip_36
 ]

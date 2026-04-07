@@ -112,12 +112,12 @@ script create_winport_account_management_status_screen
 	switch (<currentnetworktask>)
 		case $online_create_account
 		switch (<currentnetworkstatus>)
-			case $online_pending
+			case "PENDING"
 			statustext = $online_requesting_account_creation
-			case $online_done
+			case "DONE"
 			statustext = $online_account_created
 			success = true
-			case $online_failed
+			case "FAILED"
 			statustext = $online_unable_create_account
 			success = false
 			default
@@ -126,54 +126,54 @@ script create_winport_account_management_status_screen
 		endswitch
 		case $online_login_account
 		switch (<currentnetworkstatus>)
-			case $online_pending
+			case "PENDING"
 			statustext = $online_authorizing_account
-			case $online_done
+			case "DONE"
 			statustext = $online_account_authorized
 			success = true
-			case $online_failed
+			case "FAILED"
 			statustext = $online_unable_authorize_account
 			success = false
 			default
 			statustext = $online_internal_error
 			success = false
 		endswitch
-		case $online_change_account
+		case "LOGIN_ACCOUNT"
 		switch (<currentnetworkstatus>)
-			case $online_pending
+			case "PENDING"
 			statustext = $online_requesting_password_change
-			case $online_done
+			case "DONE"
 			statustext = $online_password_changed
 			success = true
-			case $online_failed
+			case "FAILED"
 			statustext = $online_unable_change_password
 			success = false
 			default
 			statustext = $online_internal_error
 			success = false
 		endswitch
-		case $online_reset_account
+		case "RESET_ACCOUNT"
 		switch (<currentnetworkstatus>)
-			case $online_pending
+			case "PENDING"
 			statustext = $online_requesting_account_reset
-			case $online_done
+			case "DONE"
 			statustext = $online_account_password_reset
 			success = true
-			case $online_failed
+			case "FAILED"
 			statustext = $online_unable_reset_account
 			success = false
 			default
 			statustext = $online_internal_error
 			success = false
 		endswitch
-		case $online_delete_account
+		case "DELETE_ACCOUNT"
 		switch (<currentnetworkstatus>)
-			case $online_pending
+			case "PENDING"
 			statustext = $online_requesting_account_deletion
-			case $online_done
+			case "DONE"
 			statustext = $online_account_deleted
 			success = true
-			case $online_failed
+			case "FAILED"
 			statustext = $online_unable_delete_account
 			success = false
 			default
@@ -450,27 +450,27 @@ script create_winport_connection_status_screen
 		begin
 		NetSessionFunc \{func = GetNetworkStatus}
 		switch (<CurrentNetworkTask>)
-			case $online_start_network
+			case "START_NETWORK"
 			switch (<CurrentNetworkStatus>)
-				case $online_pending
+				case "PENDING"
 				statusText = $online_connecting_network
-				case $online_done
+				case "DONE"
 				statusText = $online_connected_network
-				case $online_failed
+				case "FAILED"
 				statusText = $online_unable_connect_internet
 				success = false
 				default
 				statusText = $online_internal_error
 				success = false
 			endswitch
-			case $online_check_dns
+			case "CHECK_DNS"
 			switch (<CurrentNetworkStatus>)
-				case $online_pending
+				case "PENDING"
 				statusText = $online_connecting_game_servers
-				case $online_done
+				case "DONE"
 				statusText = $online_connected_game_servers
 				success = true
-				case $online_failed
+				case "FAILED"
 				statusText = $online_unable_connect_servers
 				success = false
 				default

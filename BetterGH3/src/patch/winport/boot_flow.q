@@ -1,11 +1,11 @@
 script winport_create_audio_calibrate_reminder 
-	WinPortGetConfigNumber \{name = $boot_flow_audiolagremindershown
+	WinPortGetConfigNumber \{name = "AudioLagReminderShown"
 		defaultValue = 0}
 	if (<value> = 1)
 		ui_flow_manager_respond_to_action \{action = continue}
 		return
 	endif
-	WinPortSetConfigNumber \{name = $boot_flow_audiolagremindershown
+	WinPortSetConfigNumber \{name = "AudioLagReminderShown"
 		value = 1}
 	z = 100
 	CreateScreenElement \{type = ContainerElement
