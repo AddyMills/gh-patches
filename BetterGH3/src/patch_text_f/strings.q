@@ -1,6 +1,4 @@
 artist_text_from = "Depuis"
-boot_flow_default_resolution = "Par défaut, la résolution de Guitar Hero III est fixée à 1024x768"
-boot_flow_set_resolution_display = "Allez dans Options > Graphismes et changez la résolution pour qu'elle corresponde à celle de votre écran"
 buttons_back = "RETOUR"
 buttons_select = "CHOISIR"
 buttons_up_down = "HAUT/BAS"
