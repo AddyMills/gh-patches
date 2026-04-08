@@ -3,3 +3,6 @@ DONOTSHIP
 BetterXenon*
 ghwtdbg*
 copy_to_install.bat
+
+BetterGH3/ship/DATA/*.pa*.xen
+BetterGH3/ship/DATA/PAK/*.pa*.xen
