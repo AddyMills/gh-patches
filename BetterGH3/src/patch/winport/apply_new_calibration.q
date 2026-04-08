@@ -32,7 +32,8 @@ script start_gem_scroller \{starttime = 0
 		change \{default_input_offset = $winport_input_offset}
 		change \{default_drums_offset = $winport_drums_offset}
 		change \{default_practice_mode_audio_offset = $winport_practice_mode_audio_offset}
-		change \{default_practice_mode_pitchshift_offset_song = $winport_practice_mode_pitchshift_offset_song}
+		change \{default_practice_mode_video_offset = $winport_practice_mode_video_offset}
+		//change \{default_practice_mode_pitchshift_offset_song = $winport_practice_mode_pitchshift_offset_song}
 	else
 		if isxenon
 			change \{default_gem_offset = $xenon_gem_offset}
@@ -355,6 +356,28 @@ script start_gem_scroller \{starttime = 0
 	mark_safe_for_shutdown
 endscript
 
+script SetSeekPosition_Song \{position = 0}
+	if NOT ($song_unique_id = null)
+		SetSoundSeekPosition unique_id = $song_unique_id position = <position>
+	endif
+	if NOT ($guitar_player1_unique_id = null)
+		if ($game_mode = training && $in_menu_choose_practice_section = 0)
+			SetSoundSeekPosition unique_id = $guitar_player1_unique_id position = (<position> - ($default_gem_offset + $default_practice_mode_audio_offset))
+		else
+			SetSoundSeekPosition unique_id = $guitar_player1_unique_id position = <position>
+		endif
+	endif
+	if NOT ($extra_unique_id = null)
+		SetSoundSeekPosition unique_id = $extra_unique_id position = <position>
+	endif
+	if NOT ($crowd_unique_id = null)
+		SetSoundSeekPosition unique_id = $crowd_unique_id position = <position>
+	endif
+	if NOT ($guitar_player2_unique_id = null)
+		SetSoundSeekPosition unique_id = $guitar_player2_unique_id position = <position>
+	endif
+endscript
+
 script gem_scroller \{player = 1
 		training_mode = 0}
 	setup_gemarrays song_name = <song_name> difficulty = <difficulty> player_status = <player_status>
@@ -585,7 +608,7 @@ script call_startup_scripts
 		change \{hammer_on_measure_scale = $default_hammer_on_measure_scale}
 	endif
 	if ($game_mode = training && $in_menu_choose_practice_section = 0)
-		change time_gem_offset = ($time_gem_offset + ($default_practice_mode_audio_offset / $current_speedfactor))
+		change time_gem_offset = ($time_gem_offset + ($default_practice_mode_video_offset + ($default_practice_mode_audio_offset / $current_speedfactor)))
 		change time_input_offset = ($time_input_offset + ($default_practice_mode_audio_offset / $current_speedfactor))
 		change default_drums_offset = ($default_drums_offset - ($default_practice_mode_audio_offset / $current_speedfactor))
 	endif
