@@ -1,7 +1,5 @@
 .DS_Store
-*.bat
-!/BetterGH3/fixes/_Optional fixes/Fix startup issues.bat
-src_wip
-GHAtoGH3
 DONOTSHIP
-langs
+BetterXenon*
+ghwtdbg*
+copy_to_install.bat

@@ -1,0 +1,7 @@
+themetal_markers_text_e5fa3adf = "도입부"
+themetal_markers_text_c5cccaf7 = "1절"
+themetal_markers_text_1c1a2ba4 = "간주 1"
+themetal_markers_text_3abdeb66 = "코러스/중간 8"
+themetal_markers_text_5cc59b4d = "2절"
+themetal_markers_text_a26b5fdb = "인퍼널 브레이크다운"
+themetal_markers_text_eda21fe1 = "아우트로"
