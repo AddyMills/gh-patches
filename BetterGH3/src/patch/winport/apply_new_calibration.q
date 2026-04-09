@@ -233,7 +233,7 @@ script start_gem_scroller \{starttime = 0
 	endif
 	formattext checksumname = player_status 'player%i_status' i = <player> addtostringlookup
 	formattext textname = player_text 'p%i' i = <player> addtostringlookup
-	change structurename = <player_status> guitar_volume = 0
+	change structurename = <player_status> guitar_volume = 100
 	updateguitarvolume
 	getglobaltags \{user_options}
 	if (<player> = 1)
