@@ -615,6 +615,57 @@ script call_startup_scripts
 	spawnscriptnow ($current_startup_script) params = {<...>}
 endscript
 
+script begin_song_after_intro 
+	begin
+	GetSongTimeMs
+	if (<time> >= <starttimeafterintro>)
+		break
+	endif
+	Wait \{1
+		gameframe}
+	repeat
+	begin_song
+
+	// FUCK YOU ASPYR
+	//if IsWinPort
+	//	WinPortSongHighwaySync \{sync = 1}
+	//endif
+endscript
+
+script end_song \{song_failed_pitch_streams = 0}
+	//if IsWinPort
+	//	WinPortSongHighwaySync \{sync = 0}
+	//endif
+	if NOT (<song_failed_pitch_streams> = 1)
+		KillSpawnedScript \{name = Failed_Song_Pitch_Down}
+		if ($Waiting_For_Pitching = 1)
+			change \{Waiting_For_Pitching = 0}
+			SoundBussUnlock \{Guitar_Balance}
+			SoundBussUnlock \{Band_Balance}
+			SetSoundBussParams {Band_Balance = {vol = (($Default_BussSet.Band_Balance.vol) - 2.5) pitch = ($Default_BussSet.Band_Balance.pitch)}}
+			SetSoundBussParams {Guitar_Balance = {vol = (($Default_BussSet.Guitar_Balance.vol) - 2.5) pitch = ($Default_BussSet.Guitar_Balance.pitch)}}
+			SoundBussLock \{Band_Balance}
+			SoundBussLock \{Guitar_Balance}
+		endif
+		StopStream \{unique_id = $song_unique_id}
+		StopStream \{unique_id = $guitar_player1_unique_id}
+	else
+		printf \{channel = sfx
+			"We are pitching the stream down because we failed"}
+		spawnscriptnow \{Failed_Song_Pitch_Down}
+	endif
+	if NOT ($extra_unique_id = null)
+		StopStream \{unique_id = $extra_unique_id}
+	endif
+	if NOT ($crowd_unique_id = null)
+		StopStream \{unique_id = $crowd_unique_id}
+	endif
+	if NOT ($guitar_player2_unique_id = null)
+		StopStream \{unique_id = $guitar_player2_unique_id}
+	endif
+	change \{song_paused = 0}
+endscript
+
 clap_offset = 0
 
 // Restore claps
