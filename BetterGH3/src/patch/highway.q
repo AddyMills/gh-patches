@@ -93,3 +93,56 @@ script move_highway_2d
 		milliseconds}
 	repeat
 endscript
+
+// Unhook whammy wibble from FPS
+wibble_lagp1 = 0.0
+wibble_lagp2 = 0.0
+
+script control_whammy_pitchshift 
+	if ($boss_battle = 1)
+		if (($<player_status>.player) = 2)
+			return
+		endif
+	endif
+	<set_pitch> = 0
+	if GotParam \{net_whammy_length}
+		<len> = <net_whammy_length>
+		<set_pitch> = 1
+	else
+		if GuitarGetAnalogueInfo controller = ($<player_status>.controller)
+			<set_pitch> = 1
+			if ($<player_status>.bot_play = 1)
+				<len> = 0.0
+			elseif IsGuitarController controller = ($<player_status>.controller)
+				<len> = ((<rightx> - $<player_status>.resting_whammy_position) / (1.0 - $<player_status>.resting_whammy_position))
+				if (<len> < 0.0)
+					<len> = 0.0
+				endif
+			else
+				if (<leftlength> > 0)
+					<len> = <leftlength>
+				else
+					if (<rightlength> > 0)
+						<len> = <rightlength>
+					else
+						<len> = 0
+					endif
+				endif
+			endif
+			if (($is_network_game) && ($<player_status>.player = 1))
+				change structurename = <player_status> net_whammy = <len>
+			endif
+		endif
+	endif
+	if (<set_pitch> = 1)
+		set_whammy_pitchshift control = <len> player_status = <player_status>
+		<whammy_scale> = (((<len> * 0.5) + 0.5) * 2.0)
+		GetSongTime
+		ExtendCRC wibble_lag ($<player_status>.text) out = wibble_lag
+		w = ($<wibble_lag>)
+		if (<songtime> > <w>)
+			SetNewWhammyValue value = <whammy_scale> time_remaining = <time> player_status = <player_status> player = (<player_status>.player)
+			change globalname = <wibble_lag> newvalue = (<songtime> + 0.016683350016683352)
+		endif
+	endif
+endscript

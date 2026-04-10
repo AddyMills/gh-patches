@@ -353,6 +353,8 @@ script start_gem_scroller \{starttime = 0
 			enable_bg_viewport
 		endif
 	endif
+	change \{wibble_lagp1 = 0}
+	change \{wibble_lagp2 = 0}
 	mark_safe_for_shutdown
 endscript
 
