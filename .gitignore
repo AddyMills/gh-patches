@@ -1,9 +1,8 @@
 .DS_Store
 DONOTSHIP
-BetterXenon*
-ghwtdbg*
 copy_to_install.bat
 copy_patch_to_install.bat
 
 BetterGH3/ship/DATA/*.pa*.xen
 BetterGH3/ship/DATA/PAK/*.pa*.xen
+patch.pak.*
