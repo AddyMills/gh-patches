@@ -1,3 +1,5 @@
+// Show "as made famous by" in setlist
+
 script display_as_made_famous_by \{rot_angle = -7
 		time = 0.25}
 	destroy_menu \{menu_id = setlist_original_artist}

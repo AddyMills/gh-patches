@@ -1,3 +1,4 @@
+// Save hyperspeed
 script restore_options_from_global_tags 
 	GetGlobalTags \{user_options}
 	if (<lefty_flip_p1>)

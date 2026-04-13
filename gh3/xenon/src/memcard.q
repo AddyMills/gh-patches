@@ -1,3 +1,5 @@
+// Instant save/load
+
 script memcard_save_file \{overwriteconfirmed = 0}
 	printf \{"==> memcard_save_file"}
 	change \{memcardsavingorloading = saving}

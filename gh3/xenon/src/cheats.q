@@ -1,3 +1,4 @@
+// This helps with hyperspeed saving
 script toggle_hyperspeed 
 	GetGlobalTags \{user_options}
 	if ($<cheat> >= 0)
