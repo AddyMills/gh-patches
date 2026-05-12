@@ -481,3 +481,242 @@ script boot_download_scan \{event_params = {
 	endif
 	change respond_to_signin_changed = ($store_respond_to_signin_changed)
 endscript
+
+// Don't blow away dlc when sign in changed (remaining funcs)
+script main_menu_signin_changed 
+	printf \{qs("\Lmain_menu_signin_changed")}
+	//RemoveContentFiles playerid = <controller>
+	reset_globaltags savegame = <controller>
+	cheat_turnoffalllocked
+	MonitorControllerStates
+endscript
+
+script ui_signin_changed_func 
+	printf \{qs("\Lui_signin_changed_func")}
+	//RemoveContentFiles playerid = <controller>
+	reset_globaltags savegame = <controller>
+	cheat_turnoffalllocked
+endscript
+
+script ui_band_mode_signin_changed 
+	printf \{qs("\Lui_band_mode_signin_changed")}
+	if (($primary_controller = <controller>) && ($is_network_game = 1))
+		handle_signin_changed
+		return
+	endif
+	//RemoveContentFiles playerid = <controller>
+	reset_globaltags savegame = <controller>
+	cheat_turnoffalllocked
+	get_player_num_from_controller controller_index = <controller>
+	ui_band_mode_kill_character player = <player_num>
+	MyInterfaceElement :GetTags
+	controller_signin = <controller>
+	index = 0
+	GetArraySize <menus>
+	begin
+	current_menu = (<menus> [<index>])
+	<current_menu> :GetSingleTag controller
+	if (<controller> = <controller_signin>)
+		break
+	endif
+	index = (<index> + 1)
+	repeat <array_size>
+	<current_menu> :GetSingleTag menu
+	if (($is_network_game = 1) && (<menu> = net_remote_root))
+		menu = net_remote_root
+	else
+		menu = join
+	endif
+	<current_menu> :SetTags {menu = <menu> instrument = none difficulty = none marked_in = 0}
+	ui_band_mode_helper_text
+	<current_menu> :Obj_SpawnScriptNow ui_band_mode_update_menu
+	<current_menu> :GetSingleTag controller_instrument
+	switch <controller_instrument>
+		case guitar
+		MyInterfaceElement :SetTags {current_guitar = (<current_guitar> - 1)}
+		case drum
+		MyInterfaceElement :SetTags {current_drum = (<current_drum> - 1)}
+		case mic
+		if (($allow_controller_for_all_instruments) = 0)
+			MyInterfaceElement :SetTags {current_mic = (<current_mic> - 1)}
+		endif
+	endswitch
+	<current_menu> :SetTags controller_instrument = none
+	MyInterfaceElement :GetSingleTag \{descs}
+	current_desc = (<descs> [<index>])
+	<current_desc> :SE_SetProps reposition_pos = (0.0, 0.0) ready_banner_pos = (0.0, 500.0) time = 0.1 motion = ease_in
+endscript
+
+script ui_band_name_logo_signin_changed controller = ($primary_controller)
+	printf \{qs("\Lui_band_name_logo_signin_changed")}
+	if (($primary_controller = <controller>) ||
+			($band_name_logo_controller = <controller>))
+		handle_signin_changed
+		return
+	endif
+	//RemoveContentFiles playerid = <controller>
+	reset_globaltags savegame = <controller>
+	cheat_turnoffalllocked
+endscript
+
+script shutdown_game_for_signin_change \{unloadcontent = 1
+		signin_change = 0}
+	printf \{qs("\Lshutdown_game_for_signin_change")}
+	KillSpawnedScript \{name = SpawnedOneShotBeginRepeatLoop}
+	KillSpawnedScript \{name = OneShotsBetweenSongs}
+	KillSpawnedScript \{name = SurgeBetweenSongs}
+	spawnscriptnow \{Kill_Transition_Preload_Streams}
+	change \{shutdown_game_for_signin_change_flag = 1}
+	StopAllSounds
+	KillMenuMusic
+	KillSpawnedScript \{name = net_init}
+	KillSpawnedScript \{name = do_calibration_update}
+	KillSpawnedScript \{name = cl_do_ping}
+	KillSpawnedScript \{name = kill_off_and_finish_calibration}
+	KillSpawnedScript \{name = menu_calibrate_lag_create_circles}
+	KillSpawnedScript \{name = gameplay_end_game}
+	KillSpawnedScript \{name = net_party_lost_party_connection_kill_popup}
+	NetSessionFunc \{obj = match
+		func = cancel_join_server}
+	set_demonware_failed
+	destroy_player_drop_events
+	destroy_alert_popup \{force = 1
+		no_sound = 1}
+	end_practice_song_slomo
+	memcard_sequence_cleanup_generic
+	destroy_leaving_lobby_dialog
+	kill_intro_celeb_ui
+	KillSpawnedScript \{name = create_exploding_text}
+	destroy_all_exploding_text
+	cheat_turnoffalllocked
+	destroy_credits_menu
+	quit_network_game_early \{signin_change}
+	KillSpawnedScript \{name = gameplay_end_game}
+	KillSpawnedScript \{name = play_song_game_over_spawned}
+	setup_sessionfuncs
+	if NetSessionFunc \{obj = session
+			func = has_active_session}
+		NetSessionFunc \{obj = session
+			func = stop_singleplayer_session}
+	endif
+	tutorial_shutdown
+	DeRegisterAtoms
+	kill_gem_scroller \{no_render = 1
+		restarting}
+	destroy_movie_viewport
+	clean_up_user_control_helpers
+	Menu_Music_Off
+	unload_songqpak
+	SetPakManCurrentBlock \{map = zones
+		pak = none
+		block_scripts = 1}
+	destroy_band \{unload_paks}
+	destroy_downloads_EnumContent
+	if (<unloadcontent> = 1)
+		//Downloads_UnloadContent
+		//RemoveContentFiles \{playerid = -1}
+		reset_globaltags_all
+	endif
+	if ScreenElementExists \{id = ready_container_p2}
+		DestroyScreenElement \{id = ready_container_p2}
+	endif
+	set_default_misc_globals
+	cleanup_songwon_event
+	clear_wait_for_net_match_available_items
+	UnPauseGame
+	change \{shutdown_game_for_signin_change_flag = 0}
+	printf \{qs("\Lshutdown_game_for_signin_change end")}
+endscript
+
+script sysnotify_handle_signin_change 
+	printf \{qs("\L--------------------------------")}
+	printf qs("\Lsysnotify_handle_signin_change %d") d = <controller>
+	printf \{qs("\L--------------------------------")}
+	change \{invite_controller = -1}
+	if ($signin_change_happening = 1)
+		printf \{qs("\LALREADY BEING PROCESSED")}
+		return
+	endif
+	change \{signin_change_happening = 1}
+	sysnotify_wait_until_safe
+	if ($ui_x360_sign_in_checked = 1)
+		change \{ui_x360_sign_in_checked = 0}
+		change \{signin_change_happening = 0}
+		return
+	endif
+	switch <message>
+		case live_connection_lost
+		if NOT ($is_network_game)
+			change \{signin_change_happening = 0}
+			return
+		else
+			sysnotify_handle_connection_loss
+		endif
+		case live_connection_gained
+		if (($playing_song) && ($is_network_game = 0))
+			xenon_singleplayer_session_init
+			change \{signin_change_happening = 0}
+			return
+		else
+			change \{signin_change_happening = 0}
+			return
+		endif
+		case user_changed
+		printf \{qs("\Lsysnotify_handle_signin_change - user changed")}
+		if ($respond_to_signin_changed = 1)
+			if (<controller> = ($primary_controller))
+				printf \{qs("\Lsysnotify_handle_signin_change - user changed - primary")}
+				handle_signin_changed
+			else
+				if ($respond_to_signin_changed_all_players = 1)
+					printf \{qs("\Lsysnotify_handle_signin_change - user changed - all_players ")}
+					if ($is_network_game)
+						get_local_players_in_game
+					else
+						GameMode_GetNumPlayersShown
+						num_local_players = <num_players_shown>
+					endif
+					index = 1
+					if (<num_local_players> > 0)
+						begin
+						FormatText checksumname = player_status 'player%d_status' d = <index>
+						printstruct <...>
+						if ($<player_status>.controller = <controller>)
+							printf qs("\Lsysnotify_handle_signin_change - user changed - secondary %i %c") i = <index> c = <controller>
+							handle_signin_changed
+							change \{signin_change_happening = 0}
+							return
+						endif
+						index = (<index> + 1)
+						repeat <num_local_players>
+					endif
+					if ($playing_song = 1)
+						//RemoveContentFiles playerid = <controller>
+						mark_globaltags_to_invalidate savegame = <controller>
+						cheat_turnoffalllocked
+					else
+						//RemoveContentFiles playerid = <controller>
+						reset_globaltags savegame = <controller>
+						cheat_turnoffalllocked
+					endif
+				else
+					printf \{qs("\Lsysnotify_handle_signin_change - user changed - all_players resetting")}
+					//RemoveContentFiles playerid = <controller>
+					reset_globaltags savegame = <controller>
+					cheat_turnoffalllocked
+				endif
+			endif
+		else
+			printf \{qs("\Lrespond_to_signin_changed_func")}
+			if NOT ($respond_to_signin_changed_func = none)
+				func = ($respond_to_signin_changed_func)
+				<func> <...>
+			endif
+		endif
+		default
+		printf \{qs("\L- no response required")}
+		change \{signin_change_happening = 0}
+		return
+	endswitch
+	change \{signin_change_happening = 0}
+endscript
