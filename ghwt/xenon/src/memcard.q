@@ -720,3 +720,38 @@ script sysnotify_handle_signin_change
 	endswitch
 	change \{signin_change_happening = 0}
 endscript
+
+// fucjk
+script DownloadContentLost_Spawned 
+	if NOT ($shutdown_game_for_signin_change_flag = 0)
+		return
+	endif
+	if ($respond_to_signin_changed = 0)
+		return
+	endif
+	change \{respond_to_signin_changed = 0}
+	printf \{qs("\LDownloadContentLost_Spawned")}
+	disable_pause
+	create_loading_screen \{no_bink}
+	ui_event_block \{event = menu_back
+		data = {
+			state = UIstate_Null
+		}}
+	shutdown_game_for_signin_change
+	// actually rescan if dlc is really bad
+	change lnlwl_dlc_already_scanned = 0
+	RemoveContentFiles \{playerid = -1
+		clear_cache}
+	ui_event_block \{event = menu_change
+		data = {
+			state = uistate_signin_changed
+			clear_previous_stack
+		}}
+	destroy_loading_screen \{force = 1}
+	LaunchEvent \{type = unfocus
+		target = root_window}
+	create_downloadcontentlost_menu
+	startrendering
+	SetButtonEventMappings \{unblock_menu_input}
+	printf \{qs("\LDownloadContentLost")}
+endscript
