@@ -9,12 +9,13 @@ script memcard_choose_storage_device \{StorageSelectorForce = 0}
 	if NOT CardIsInSlot
 		if (<StorageSelectorForce> = 0)
 			// persist cache if a new profile overrides globals
-			change lnlwl_dlc_already_scanned = 1  // referenced in download.q
+			//change lnlwl_dlc_already_scanned = 1  // referenced in download.q
+			// ^ we dont need this in ghsh
 			goto \{create_storagedevice_warning_menu}
 		endif
 	endif
 	dump
-	ShowStorageSelector force = <StorageSelectorForce> FileType = Progress
+	ShowStorageSelector force = <StorageSelectorForce> filetype = progress
 endscript
 
 script memcard_save_file \{overwriteconfirmed = 0}

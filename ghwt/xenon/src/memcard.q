@@ -1,15 +1,15 @@
-lnlwl_dlc_already_scanned = 0
-
-// instant check/save/load
+// Instant memcard check/save/load
 
 script memcard_choose_storage_device \{StorageSelectorForce = 0}
 	printscriptinfo \{qs("==> memcard_choose_storage_device")}
 	create_checking_memory_card_screen
+	//Wait \{1
+	//	seconds}
 	MC_SetActivePlayer userid = ($MemcardController)
 	if NOT CardIsInSlot
 		if (<StorageSelectorForce> = 0)
 			// persist cache if a new profile overrides globals
-			change lnlwl_dlc_already_scanned = 1
+			change lnlwl_dlc_already_scanned = 1  // referenced in download.q
 			goto \{create_storagedevice_warning_menu}
 		endif
 	endif
@@ -129,6 +129,8 @@ script memcard_delete_file \{file_type = `default`}
 				create_delete_success_menu
 			endif
 		endif
+		//Wait \{1
+		//	seconds}
 	endif
 	if NotCD
 		DeleteAllSongDataFromFile
@@ -171,6 +173,8 @@ script memcard_load_file \{LoadConfirmed = 0}
 	//memcard_wait_for_timer
 	create_load_success_menu
 	memcard_post_load_progress
+	//Wait \{1
+	//	seconds}
 	memcard_sequence_quit
 endscript
 
@@ -266,6 +270,8 @@ script memcard_save_jam \{OverwriteConfirmed = 0
 	create_save_success_menu
 	guitar_memcard_save_success_sound
 	change \{save_data_dirty = 0}
+	//Wait \{1
+	//	seconds}
 	if NOT MC_FolderExists \{FolderName = $memcard_content_name}
 		if NOT MC_SpaceForNewFolder \{desc = GuitarContent}
 			memcard_error \{error = create_out_of_space_menu
@@ -324,6 +330,8 @@ script memcard_load_jam
 	change \{MemcardSuccess = true}
 	//memcard_wait_for_timer
 	create_load_success_menu
+	//Wait \{1
+	//	seconds}
 	memcard_sequence_quit
 endscript
 
@@ -384,6 +392,8 @@ script memcard_rename_jam
 	//memcard_wait_for_timer
 	create_rename_success_menu
 	guitar_memcard_save_success_sound
+	//Wait \{1
+	//	seconds}
 	memcard_sequence_quit
 endscript
 
@@ -428,329 +438,9 @@ script memcard_delete_jam
 	//memcard_wait_for_timer
 	create_delete_success_menu
 	guitar_memcard_save_success_sound
+	//Wait \{1
+	//	seconds}
 	memcard_sequence_quit
 	printf \{channel = jam_mode
 		qs("\Lmemcard_delete_jam end")}
-endscript
-
-// only scan dlc once
-// fuck me bro
-script boot_download_scan \{event_params = {
-			event = menu_replace
-			data = {
-				state = uistate_boot_guitar
-			}
-		}}
-	if ($lnlwl_dlc_already_scanned = 0)
-		Wait \{1
-			gameframes}
-		startrendering \{reason = menu_transition}
-		if NOT ui_event_exists_in_stack \{name = 'mainmenu'}
-			if ControllerPressed x <controller>
-				if ControllerPressed circle <controller>
-					if ControllerPressed square <controller>
-						if ControllerPressed triangle <controller>
-							printf \{qs("\LClearing download cache")}
-							RemoveContentFiles \{playerid = -1
-								clear_cache}
-						endif
-					endif
-				endif
-			endif
-		endif
-		GetStartTime
-		Downloads_EnumContent controller = <controller>
-		get_current_first_play
-		begin
-		GetElapsedTime StartTime = <StartTime>
-		if (<ElapsedTime> > 1000)
-			break
-		endif
-		Wait \{1
-			gameframe}
-		repeat
-		if ($shutdown_game_for_signin_change_flag = 1)
-			return
-		endif
-		change lnlwl_dlc_already_scanned = 1
-	endif
-	ui_event_wait <event_params>
-	if ((<event_params>.data.state) = uistate_jam)
-		create_loading_screen \{jam_mode = 1}
-	endif
-	change respond_to_signin_changed = ($store_respond_to_signin_changed)
-endscript
-
-// Don't blow away dlc when sign in changed (remaining funcs)
-script main_menu_signin_changed 
-	printf \{qs("\Lmain_menu_signin_changed")}
-	//RemoveContentFiles playerid = <controller>
-	reset_globaltags savegame = <controller>
-	cheat_turnoffalllocked
-	MonitorControllerStates
-endscript
-
-script ui_signin_changed_func 
-	printf \{qs("\Lui_signin_changed_func")}
-	//RemoveContentFiles playerid = <controller>
-	reset_globaltags savegame = <controller>
-	cheat_turnoffalllocked
-endscript
-
-script ui_band_mode_signin_changed 
-	printf \{qs("\Lui_band_mode_signin_changed")}
-	if (($primary_controller = <controller>) && ($is_network_game = 1))
-		handle_signin_changed
-		return
-	endif
-	//RemoveContentFiles playerid = <controller>
-	reset_globaltags savegame = <controller>
-	cheat_turnoffalllocked
-	get_player_num_from_controller controller_index = <controller>
-	ui_band_mode_kill_character player = <player_num>
-	MyInterfaceElement :GetTags
-	controller_signin = <controller>
-	index = 0
-	GetArraySize <menus>
-	begin
-	current_menu = (<menus> [<index>])
-	<current_menu> :GetSingleTag controller
-	if (<controller> = <controller_signin>)
-		break
-	endif
-	index = (<index> + 1)
-	repeat <array_size>
-	<current_menu> :GetSingleTag menu
-	if (($is_network_game = 1) && (<menu> = net_remote_root))
-		menu = net_remote_root
-	else
-		menu = join
-	endif
-	<current_menu> :SetTags {menu = <menu> instrument = none difficulty = none marked_in = 0}
-	ui_band_mode_helper_text
-	<current_menu> :Obj_SpawnScriptNow ui_band_mode_update_menu
-	<current_menu> :GetSingleTag controller_instrument
-	switch <controller_instrument>
-		case guitar
-		MyInterfaceElement :SetTags {current_guitar = (<current_guitar> - 1)}
-		case drum
-		MyInterfaceElement :SetTags {current_drum = (<current_drum> - 1)}
-		case mic
-		if (($allow_controller_for_all_instruments) = 0)
-			MyInterfaceElement :SetTags {current_mic = (<current_mic> - 1)}
-		endif
-	endswitch
-	<current_menu> :SetTags controller_instrument = none
-	MyInterfaceElement :GetSingleTag \{descs}
-	current_desc = (<descs> [<index>])
-	<current_desc> :SE_SetProps reposition_pos = (0.0, 0.0) ready_banner_pos = (0.0, 500.0) time = 0.1 motion = ease_in
-endscript
-
-script ui_band_name_logo_signin_changed controller = ($primary_controller)
-	printf \{qs("\Lui_band_name_logo_signin_changed")}
-	if (($primary_controller = <controller>) ||
-			($band_name_logo_controller = <controller>))
-		handle_signin_changed
-		return
-	endif
-	//RemoveContentFiles playerid = <controller>
-	reset_globaltags savegame = <controller>
-	cheat_turnoffalllocked
-endscript
-
-script shutdown_game_for_signin_change \{unloadcontent = 1
-		signin_change = 0}
-	printf \{qs("\Lshutdown_game_for_signin_change")}
-	KillSpawnedScript \{name = SpawnedOneShotBeginRepeatLoop}
-	KillSpawnedScript \{name = OneShotsBetweenSongs}
-	KillSpawnedScript \{name = SurgeBetweenSongs}
-	spawnscriptnow \{Kill_Transition_Preload_Streams}
-	change \{shutdown_game_for_signin_change_flag = 1}
-	StopAllSounds
-	KillMenuMusic
-	KillSpawnedScript \{name = net_init}
-	KillSpawnedScript \{name = do_calibration_update}
-	KillSpawnedScript \{name = cl_do_ping}
-	KillSpawnedScript \{name = kill_off_and_finish_calibration}
-	KillSpawnedScript \{name = menu_calibrate_lag_create_circles}
-	KillSpawnedScript \{name = gameplay_end_game}
-	KillSpawnedScript \{name = net_party_lost_party_connection_kill_popup}
-	NetSessionFunc \{obj = match
-		func = cancel_join_server}
-	set_demonware_failed
-	destroy_player_drop_events
-	destroy_alert_popup \{force = 1
-		no_sound = 1}
-	end_practice_song_slomo
-	memcard_sequence_cleanup_generic
-	destroy_leaving_lobby_dialog
-	kill_intro_celeb_ui
-	KillSpawnedScript \{name = create_exploding_text}
-	destroy_all_exploding_text
-	cheat_turnoffalllocked
-	destroy_credits_menu
-	quit_network_game_early \{signin_change}
-	KillSpawnedScript \{name = gameplay_end_game}
-	KillSpawnedScript \{name = play_song_game_over_spawned}
-	setup_sessionfuncs
-	if NetSessionFunc \{obj = session
-			func = has_active_session}
-		NetSessionFunc \{obj = session
-			func = stop_singleplayer_session}
-	endif
-	tutorial_shutdown
-	DeRegisterAtoms
-	kill_gem_scroller \{no_render = 1
-		restarting}
-	destroy_movie_viewport
-	clean_up_user_control_helpers
-	Menu_Music_Off
-	unload_songqpak
-	SetPakManCurrentBlock \{map = zones
-		pak = none
-		block_scripts = 1}
-	destroy_band \{unload_paks}
-	destroy_downloads_EnumContent
-	if (<unloadcontent> = 1)
-		//Downloads_UnloadContent
-		//RemoveContentFiles \{playerid = -1}
-		reset_globaltags_all
-	endif
-	if ScreenElementExists \{id = ready_container_p2}
-		DestroyScreenElement \{id = ready_container_p2}
-	endif
-	set_default_misc_globals
-	cleanup_songwon_event
-	clear_wait_for_net_match_available_items
-	UnPauseGame
-	change \{shutdown_game_for_signin_change_flag = 0}
-	printf \{qs("\Lshutdown_game_for_signin_change end")}
-endscript
-
-script sysnotify_handle_signin_change 
-	printf \{qs("\L--------------------------------")}
-	printf qs("\Lsysnotify_handle_signin_change %d") d = <controller>
-	printf \{qs("\L--------------------------------")}
-	change \{invite_controller = -1}
-	if ($signin_change_happening = 1)
-		printf \{qs("\LALREADY BEING PROCESSED")}
-		return
-	endif
-	change \{signin_change_happening = 1}
-	sysnotify_wait_until_safe
-	if ($ui_x360_sign_in_checked = 1)
-		change \{ui_x360_sign_in_checked = 0}
-		change \{signin_change_happening = 0}
-		return
-	endif
-	switch <message>
-		case live_connection_lost
-		if NOT ($is_network_game)
-			change \{signin_change_happening = 0}
-			return
-		else
-			sysnotify_handle_connection_loss
-		endif
-		case live_connection_gained
-		if (($playing_song) && ($is_network_game = 0))
-			xenon_singleplayer_session_init
-			change \{signin_change_happening = 0}
-			return
-		else
-			change \{signin_change_happening = 0}
-			return
-		endif
-		case user_changed
-		printf \{qs("\Lsysnotify_handle_signin_change - user changed")}
-		if ($respond_to_signin_changed = 1)
-			if (<controller> = ($primary_controller))
-				printf \{qs("\Lsysnotify_handle_signin_change - user changed - primary")}
-				handle_signin_changed
-			else
-				if ($respond_to_signin_changed_all_players = 1)
-					printf \{qs("\Lsysnotify_handle_signin_change - user changed - all_players ")}
-					if ($is_network_game)
-						get_local_players_in_game
-					else
-						GameMode_GetNumPlayersShown
-						num_local_players = <num_players_shown>
-					endif
-					index = 1
-					if (<num_local_players> > 0)
-						begin
-						FormatText checksumname = player_status 'player%d_status' d = <index>
-						printstruct <...>
-						if ($<player_status>.controller = <controller>)
-							printf qs("\Lsysnotify_handle_signin_change - user changed - secondary %i %c") i = <index> c = <controller>
-							handle_signin_changed
-							change \{signin_change_happening = 0}
-							return
-						endif
-						index = (<index> + 1)
-						repeat <num_local_players>
-					endif
-					if ($playing_song = 1)
-						//RemoveContentFiles playerid = <controller>
-						mark_globaltags_to_invalidate savegame = <controller>
-						cheat_turnoffalllocked
-					else
-						//RemoveContentFiles playerid = <controller>
-						reset_globaltags savegame = <controller>
-						cheat_turnoffalllocked
-					endif
-				else
-					printf \{qs("\Lsysnotify_handle_signin_change - user changed - all_players resetting")}
-					//RemoveContentFiles playerid = <controller>
-					reset_globaltags savegame = <controller>
-					cheat_turnoffalllocked
-				endif
-			endif
-		else
-			printf \{qs("\Lrespond_to_signin_changed_func")}
-			if NOT ($respond_to_signin_changed_func = none)
-				func = ($respond_to_signin_changed_func)
-				<func> <...>
-			endif
-		endif
-		default
-		printf \{qs("\L- no response required")}
-		change \{signin_change_happening = 0}
-		return
-	endswitch
-	change \{signin_change_happening = 0}
-endscript
-
-// fucjk
-script DownloadContentLost_Spawned 
-	if NOT ($shutdown_game_for_signin_change_flag = 0)
-		return
-	endif
-	if ($respond_to_signin_changed = 0)
-		return
-	endif
-	change \{respond_to_signin_changed = 0}
-	printf \{qs("\LDownloadContentLost_Spawned")}
-	disable_pause
-	create_loading_screen \{no_bink}
-	ui_event_block \{event = menu_back
-		data = {
-			state = UIstate_Null
-		}}
-	shutdown_game_for_signin_change
-	// actually rescan if dlc is really bad
-	change lnlwl_dlc_already_scanned = 0
-	RemoveContentFiles \{playerid = -1
-		clear_cache}
-	ui_event_block \{event = menu_change
-		data = {
-			state = uistate_signin_changed
-			clear_previous_stack
-		}}
-	destroy_loading_screen \{force = 1}
-	LaunchEvent \{type = unfocus
-		target = root_window}
-	create_downloadcontentlost_menu
-	startrendering
-	SetButtonEventMappings \{unblock_menu_input}
-	printf \{qs("\LDownloadContentLost")}
 endscript
