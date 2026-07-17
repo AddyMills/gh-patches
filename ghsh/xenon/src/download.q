@@ -250,4 +250,104 @@ script shutdown_game_for_signin_change \{unloadcontent = 1
 	printf \{qs("\Lshutdown_game_for_signin_change end")}
 endscript
 
-//script sysnotify_handle_signin_change (not present in ghsh)
+script sysnotify_handle_signin_change 
+	printf \{qs("\L--------------------------------")}
+	printf qs("\Lsysnotify_handle_signin_change %d") d = <controller>
+	printf \{qs("\L--------------------------------")}
+	if ($invite_controller = <controller>)
+		change \{invite_controller = -1}
+	endif
+	if ($signin_change_happening = 1)
+		printf \{qs("\LALREADY BEING PROCESSED")}
+		return
+	endif
+	if (<message> = live_connection_lost)
+		if NOT ($is_network_game)
+			printf \{qs("\LDISCARDING CONNECTION LOSS IN OFFLINE GAME")}
+			return
+		endif
+	endif
+	change \{signin_change_happening = 1}
+	sysnotify_wait_until_safe
+	if ($ui_x360_sign_in_checked = 1)
+		change \{ui_x360_sign_in_checked = 0}
+		change \{signin_change_happening = 0}
+		return
+	endif
+	switch <message>
+		case live_connection_lost
+		if NOT ($is_network_game)
+			SoftAssert \{qs("\LInternal signin error")}
+			change \{signin_change_happening = 0}
+			return
+		else
+			sysnotify_handle_connection_loss
+		endif
+		case live_connection_gained
+		if (($playing_song) && ($is_network_game = 0))
+			xenon_singleplayer_session_init
+			change \{signin_change_happening = 0}
+			return
+		else
+			change \{signin_change_happening = 0}
+			return
+		endif
+		case user_changed
+		printf \{qs("\Lsysnotify_handle_signin_change - user changed")}
+		if ($respond_to_signin_changed = 1)
+			if (<controller> = ($primary_controller))
+				printf \{qs("\Lsysnotify_handle_signin_change - user changed - primary")}
+				handle_signin_changed
+			else
+				if ($respond_to_signin_changed_all_players = 1)
+					printf \{qs("\Lsysnotify_handle_signin_change - user changed - all_players ")}
+					if ($is_network_game)
+						get_local_players_in_game
+					else
+						GameMode_GetNumPlayersShown
+						num_local_players = <num_players_shown>
+					endif
+					index = 1
+					if (<num_local_players> > 0)
+						begin
+						FormatText checksumname = player_status 'player%d_status' d = <index>
+						printstruct <...>
+						if ($<player_status>.controller = <controller>)
+							printf qs("\Lsysnotify_handle_signin_change - user changed - secondary %i %c") i = <index> c = <controller>
+							handle_signin_changed
+							change \{signin_change_happening = 0}
+							return
+						endif
+						index = (<index> + 1)
+						repeat <num_local_players>
+					endif
+					if ($playing_song = 1)
+						//RemoveContentFiles playerid = <controller>
+						mark_globaltags_to_invalidate savegame = <controller>
+						cheat_turnoffalllocked
+					else
+						//RemoveContentFiles playerid = <controller>
+						reset_globaltags savegame = <controller>
+						cheat_turnoffalllocked
+					endif
+				else
+					printf \{qs("\Lsysnotify_handle_signin_change - user changed - all_players resetting")}
+					//RemoveContentFiles playerid = <controller>
+					reset_globaltags savegame = <controller>
+					cheat_turnoffalllocked
+				endif
+			endif
+		else
+			printf \{qs("\Lrespond_to_signin_changed_func")}
+			if NOT ($respond_to_signin_changed_func = none)
+				func = ($respond_to_signin_changed_func)
+				<func> <...>
+			endif
+		endif
+		default
+		printf \{qs("\L- no response required")}
+		change \{signin_change_happening = 0}
+		return
+	endswitch
+	change \{signin_change_happening = 0}
+endscript
