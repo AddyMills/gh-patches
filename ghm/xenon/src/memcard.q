@@ -17,52 +17,54 @@ script memcard_choose_storage_device \{StorageSelectorForce = 0}
 	ShowStorageSelector force = <StorageSelectorForce> FileType = Progress
 endscript
 
-script memcard_save_file \{OverwriteConfirmed = 0}
+script memcard_save_file \{overwriteconfirmed = 0}
 	printf \{qs("\L==> memcard_save_file")}
 	mark_unsafe_for_shutdown
-	change \{MemcardSavingOrLoading = Saving}
+	change \{memcardsavingorloading = saving}
 	memcard_check_for_card
-	ResetTimer
+	resettimer
 	<overwrite> = 0
-	if MC_FolderExists \{FolderName = $memcard_content_name}
-		if (<OverwriteConfirmed> = 1)
+	if mc_folderexists \{foldername = $memcard_content_name}
+		if (<overwriteconfirmed> = 1)
 			<overwrite> = 1
 			create_overwrite_menu
-			ResetTimer
-			MC_SetActiveFolder \{FolderName = $memcard_content_name}
+			resettimer
+			mc_setactivefolder \{foldername = $memcard_content_name}
 		else
 			goto \{create_confirm_overwrite_menu}
 		endif
 	else
-		if NOT MC_SpaceForNewFolder \{desc = GuitarContent}
+		if NOT MC_SpaceForNewFolder \{desc = guitarcontent}
 			memcard_error \{error = create_out_of_space_menu}
 		endif
 		create_save_menu
-		ResetTimer
-		MC_CreateFolder \{name = $memcard_content_name
-			desc = GuitarContent}
+		resettimer
+		mc_createfolder \{name = $memcard_content_name
+			desc = guitarcontent}
 		if (<result> = false)
-			if (<ErrorCode> = OutOfSpace)
+			if (<errorcode> = outofspace)
 				memcard_error \{error = create_out_of_space_menu}
 			else
 				memcard_error \{error = create_save_failed_menu}
 			endif
 		endif
+		get_savegame_from_controller controller = ($MemcardController)
+		SetGlobalTags user_options savegame = <savegame> Params = {autosave = 1}
 	endif
-	MC_SetActiveFolder \{FolderName = $memcard_content_name}
-	MC_LoadTOCInActiveFolder
+	mc_setactivefolder \{foldername = $memcard_content_name}
+	mc_loadtocinactivefolder
 	memcard_pre_save_progress
 	write_globals_to_global_tags
 	PushTempMemCardPools \{heap = heap_bink}
-	SaveToMemoryCard \{filename = $memcard_file_name
-		FileType = Progress
+	savetomemorycard \{filename = $memcard_file_name
+		filetype = progress
 		usepaddingslot = always}
 	PopTempMemCardPools
 	if (<result> = false)
-		if (<ErrorCode> = OutOfSpace)
+		if (<errorcode> = outofspace)
 			memcard_error \{error = create_out_of_space_menu}
 		else
-			if (<ErrorCode> = corrupt)
+			if (<errorcode> = corrupt)
 				memcard_error \{error = create_corrupted_data_menu}
 			elseif (<overwrite> = 1)
 				memcard_error \{error = create_overwrite_failed_menu}
@@ -72,7 +74,7 @@ script memcard_save_file \{OverwriteConfirmed = 0}
 		endif
 	endif
 	refresh_jam_directory_contents
-	change \{MemcardSuccess = true}
+	change \{memcardsuccess = true}
 	//memcard_wait_for_timer
 	if (<overwrite> = 1)
 		create_overwrite_success_menu
@@ -90,12 +92,29 @@ script memcard_delete_file \{file_type = `default`}
 	printf \{qs("\L==> memcard_delete_file")}
 	mark_unsafe_for_shutdown
 	create_delete_file_menu
-	MC_WaitAsyncOpsFinished
-	if IsPs3
-		fade_overlay_on \{alpha = 1.0}
-		MC_StartPS3ForceDelete
+	mc_waitasyncopsfinished
+	if isps3
+		CreateScreenElement \{type = SpriteElement
+			id = ps3_delete_fader
+			parent = root_window
+			texture = black
+			rgba = [
+				0
+				0
+				0
+				255
+			]
+			pos = (640.0, 360.0)
+			dims = (1280.0, 720.0)
+			just = [
+				center
+				center
+			]
+			z_priority = $ps3_fade_overlay_z
+			alpha = 1.0}
+		mc_startps3forcedelete
 		begin
-		if MC_IsPS3ForceDeleteFinished
+		if mc_isps3forcedeletefinished
 			break
 		endif
 		Wait \{1
@@ -103,15 +122,15 @@ script memcard_delete_file \{file_type = `default`}
 		repeat
 		refresh_jam_directory_contents
 		if NOT (<file_type> = jam_file)
-			MC_SetActiveFolder \{FolderName = $memcard_content_name}
-			MC_LoadTOCInActiveFolder
+			mc_setactivefolder \{foldername = $memcard_content_name}
+			mc_loadtocinactivefolder
 		endif
-		fade_overlay_off
+		DestroyScreenElement \{id = ps3_delete_fader}
 	else
 		if (<file_type> = `default`)
-			if MC_FolderExists \{FolderName = $memcard_content_name}
-				ResetTimer
-				MC_DeleteFolder \{FolderName = $memcard_content_name}
+			if mc_folderexists \{foldername = $memcard_content_name}
+				resettimer
+				mc_deletefolder \{foldername = $memcard_content_name}
 				if (<result> = false)
 					memcard_error \{error = create_delete_failed_menu}
 				endif
@@ -119,9 +138,9 @@ script memcard_delete_file \{file_type = `default`}
 			endif
 		endif
 		if (<file_type> = jam_file)
-			if MC_FolderExists \{FolderName = $memcard_content_jamsession_name}
-				ResetTimer
-				MC_DeleteFolder \{FolderName = $memcard_content_jamsession_name}
+			if mc_folderexists \{foldername = $memcard_content_jamsession_name}
+				resettimer
+				mc_deletefolder \{foldername = $memcard_content_jamsession_name}
 				if (<result> = false)
 					memcard_error \{error = create_delete_failed_menu}
 				endif
@@ -129,6 +148,8 @@ script memcard_delete_file \{file_type = `default`}
 				create_delete_success_menu
 			endif
 		endif
+		//Wait \{1
+		//	seconds}
 	endif
 	if NotCD
 		DeleteAllSongDataFromFile
@@ -137,82 +158,84 @@ script memcard_delete_file \{file_type = `default`}
 	memcard_sequence_retry
 endscript
 
-script memcard_load_file \{LoadConfirmed = 0}
+script memcard_load_file \{loadconfirmed = 0}
 	mark_unsafe_for_shutdown
 	printf \{qs("\L==> memcard_load_file")}
-	change \{MemcardSavingOrLoading = loading}
-	MC_WaitAsyncOpsFinished
+	change \{memcardsavingorloading = loading}
+	mc_waitasyncopsfinished
 	memcard_check_for_card
-	ResetTimer
-	if MC_FolderExists \{FolderName = $memcard_content_name}
-		if (<LoadConfirmed> = 1)
-			MC_SetActiveFolder \{FolderName = $memcard_content_name}
+	resettimer
+	if mc_folderexists \{foldername = $memcard_content_name}
+		if (<loadconfirmed> = 1)
+			mc_setactivefolder \{foldername = $memcard_content_name}
 		else
 			goto \{create_confirm_load_menu}
 		endif
 	else
 		memcard_error \{error = create_no_save_found_menu}
 	endif
-	MC_SetActiveFolder \{FolderName = $memcard_content_name}
+	mc_setactivefolder \{foldername = $memcard_content_name}
 	create_load_file_menu
 	PushTempMemCardPools \{heap = heap_bink}
-	LoadFromMemoryCard \{filename = $memcard_file_name
-		FileType = Progress}
+	loadfrommemorycard \{filename = $memcard_file_name
+		filetype = progress}
 	PopTempMemCardPools
 	if (<result> = false)
-		if (<ErrorCode> = corrupt)
+		if (<errorcode> = corrupt)
 			memcard_error \{error = create_corrupted_data_menu}
 		else
 			memcard_error \{error = create_load_failed_menu}
 		endif
 	endif
 	refresh_jam_directory_contents
-	change \{MemcardSuccess = true}
+	change \{memcardsuccess = true}
 	//memcard_wait_for_timer
 	create_load_success_menu
 	memcard_post_load_progress
+	//Wait \{1
+	//	seconds}
 	memcard_sequence_quit
 endscript
 
-script memcard_save_jam \{OverwriteConfirmed = 0
+script memcard_save_jam \{overwriteconfirmed = 0
 		card_was_in_slot = true}
 	mark_unsafe_for_shutdown
-	MC_WaitAsyncOpsFinished
-	change \{MemcardSavingOrLoading = Saving}
+	mc_waitasyncopsfinished
+	change \{memcardsavingorloading = saving}
 	memcard_check_for_card
-	ResetTimer
+	resettimer
 	printf \{channel = jam_mode
 		qs("\Lmemcard_save_jam")}
 	memcard_enum_folders
 	create_save_menu
-	if MC_FolderExists \{FolderName = $memcard_jamsession_content_name}
+	if mc_folderexists \{foldername = $memcard_jamsession_content_name}
 		if (<card_was_in_slot> = false)
-			if (<OverwriteConfirmed> = 1)
+			if (<overwriteconfirmed> = 1)
 				<overwrite> = 1
 				create_overwrite_menu
-				ResetTimer
-				MC_SetActiveFolder \{FolderName = $memcard_jamsession_content_name}
+				resettimer
+				mc_setactivefolder \{foldername = $memcard_jamsession_content_name}
 			else
 				goto \{create_confirm_overwrite_menu}
 			endif
 		else
-			MC_SetActiveFolder \{FolderName = $memcard_jamsession_content_name}
+			mc_setactivefolder \{foldername = $memcard_jamsession_content_name}
 		endif
 	else
-		if NOT MC_SpaceForNewFolder \{desc = GuitarContent}
+		if NOT MC_SpaceForNewFolder \{desc = guitarcontent}
 			memcard_error \{error = create_out_of_space_menu}
 		endif
-		MC_CreateFolder \{name = $memcard_jamsession_content_name
+		mc_createfolder \{name = $memcard_jamsession_content_name
 			desc = JamSessionsContent}
 		if (<result> = false)
-			if (<ErrorCode> = OutOfSpace)
+			if (<errorcode> = outofspace)
 				memcard_error \{error = create_out_of_space_menu}
 			else
 				memcard_error \{error = create_save_failed_menu}
 			endif
 		endif
 	endif
-	MC_LoadTOCInActiveFolder
+	mc_loadtocinactivefolder
 	jam_publish_update_playback_track \{guitar_num = 1}
 	jam_publish_update_playback_track \{guitar_num = 2}
 	jam_publish_update_playback_drumvocal_track
@@ -228,27 +251,27 @@ script memcard_save_jam \{OverwriteConfirmed = 0
 	change memcard_jamsession_playback_track2 = <playback_track2>
 	change memcard_jamsession_playback_track_drums = <playback_track_drums>
 	change memcard_jamsession_playback_track_vocals = <playback_track_vocals>
-	SaveToMemoryCard \{filename = $memcard_jamsession_file_name
-		FileType = jamsession
+	savetomemorycard \{filename = $memcard_jamsession_file_name
+		filetype = jamsession
 		usepaddingslot = never}
 	if (<result> = false)
-		if (<ErrorCode> = OutOfSpace)
+		if (<errorcode> = outofspace)
 			memcard_error \{error = create_out_of_space_menu}
-		elseif (<ErrorCode> = badfolder)
+		elseif (<errorcode> = badfolder)
 			memcard_error \{error = create_corrupted_data_menu
-				params = {
+				Params = {
 					file_type = jam_file
 				}}
 		else
 			memcard_error \{error = create_save_failed_menu}
 		endif
 	endif
-	LoadFromMemoryCard \{filename = $memcard_jamsession_file_name
-		FileType = jamsession}
+	loadfrommemorycard \{filename = $memcard_jamsession_file_name
+		filetype = jamsession}
 	if (<result> = false)
-		if (<ErrorCode> = corrupt)
+		if (<errorcode> = corrupt)
 			memcard_error \{error = create_corrupted_data_menu
-				params = {
+				Params = {
 					file_type = jam_file
 				}}
 		else
@@ -256,21 +279,23 @@ script memcard_save_jam \{OverwriteConfirmed = 0
 		endif
 	endif
 	change \{jam_selected_song = $memcard_jamsession_file_name}
-	GetMemCardDirectoryListing
+	getmemcarddirectorylisting
 	jam_update_controller_directory_listing controller = ($MemcardController) directorylisting = <directorylisting>
 	change jam_curr_directory_listing = <directorylisting>
 	printf \{channel = jam_mode
 		qs("\Lmemcard_save_jam end")}
-	change \{MemcardSuccess = true}
+	change \{memcardsuccess = true}
 	//memcard_wait_for_timer
 	create_save_success_menu
 	guitar_memcard_save_success_sound
 	change \{save_data_dirty = 0}
-	if NOT MC_FolderExists \{FolderName = $memcard_content_name}
-		if NOT MC_SpaceForNewFolder \{desc = GuitarContent}
+	//Wait \{1
+	//	seconds}
+	if NOT mc_folderexists \{foldername = $memcard_content_name}
+		if NOT MC_SpaceForNewFolder \{desc = guitarcontent}
 			memcard_error \{error = create_out_of_space_menu
-				params = {
-					message_type = Progress
+				Params = {
+					message_type = progress
 				}}
 		endif
 	endif
@@ -281,37 +306,37 @@ endscript
 
 script memcard_load_jam 
 	mark_unsafe_for_shutdown
-	MC_WaitAsyncOpsFinished
-	change \{MemcardSavingOrLoading = loading}
+	mc_waitasyncopsfinished
+	change \{memcardsavingorloading = loading}
 	memcard_check_for_card
-	ResetTimer
+	resettimer
 	printf \{channel = jam_mode
 		qs("\Lmemcard_load_jam")}
 	memcard_enum_folders
 	create_load_file_menu
-	if MC_FolderExists \{FolderName = $memcard_jamsession_content_name}
-		MC_SetActiveFolder \{FolderName = $memcard_jamsession_content_name}
+	if mc_folderexists \{foldername = $memcard_jamsession_content_name}
+		mc_setactivefolder \{foldername = $memcard_jamsession_content_name}
 	else
 		memcard_error \{error = create_no_save_found_menu}
 	endif
-	MC_LoadTOCInActiveFolder
+	mc_loadtocinactivefolder
 	if (<result> = false)
-		if (<ErrorCode> = corrupt)
+		if (<errorcode> = corrupt)
 			memcard_error \{error = create_corrupted_data_menu
-				params = {
+				Params = {
 					file_type = jam_file
 				}}
 		else
 			memcard_error \{error = create_load_failed_menu}
 		endif
 	endif
-	MC_SetActiveFolder \{FolderName = $memcard_jamsession_content_name}
-	LoadFromMemoryCard \{filename = $memcard_jamsession_file_name
-		FileType = jamsession}
+	mc_setactivefolder \{foldername = $memcard_jamsession_content_name}
+	loadfrommemorycard \{filename = $memcard_jamsession_file_name
+		filetype = jamsession}
 	if (<result> = false)
-		if (<ErrorCode> = corrupt)
+		if (<errorcode> = corrupt)
 			memcard_error \{error = create_corrupted_data_menu
-				params = {
+				Params = {
 					file_type = jam_file
 				}}
 		else
@@ -321,9 +346,11 @@ script memcard_load_jam
 	change \{jam_selected_song = $memcard_jamsession_file_name}
 	printf \{channel = jam_mode
 		qs("\Lmemcard_load_jam end")}
-	change \{MemcardSuccess = true}
+	change \{memcardsuccess = true}
 	//memcard_wait_for_timer
 	create_load_success_menu
+	//Wait \{1
+	//	seconds}
 	memcard_sequence_quit
 endscript
 
@@ -331,39 +358,39 @@ script memcard_rename_jam
 	printf \{channel = jam_mode
 		qs("\Lmemcard_rename_jam")}
 	mark_unsafe_for_shutdown
-	MC_WaitAsyncOpsFinished
-	change \{MemcardSavingOrLoading = loading}
+	mc_waitasyncopsfinished
+	change \{memcardsavingorloading = loading}
 	memcard_check_for_card
-	ResetTimer
+	resettimer
 	printf \{channel = jam_mode
 		qs("\Ljamsession_renamememcardfile")}
 	memcard_enum_folders
 	create_save_menu
-	if MC_FolderExists \{FolderName = $memcard_jamsession_content_name}
-		MC_SetActiveFolder \{FolderName = $memcard_jamsession_content_name}
+	if mc_folderexists \{foldername = $memcard_jamsession_content_name}
+		mc_setactivefolder \{foldername = $memcard_jamsession_content_name}
 	else
 		memcard_error \{error = create_no_save_found_menu}
 	endif
-	MC_LoadTOCInActiveFolder
-	MC_SetActiveFolder \{FolderName = $memcard_jamsession_content_name}
+	mc_loadtocinactivefolder
+	mc_setactivefolder \{foldername = $memcard_jamsession_content_name}
 	RenameMemCardFile \{filename = $memcard_jamsession_file_name
-		FileType = jamsession
+		filetype = jamsession
 		newfilename = $memcard_jamsession_new_file_name}
 	if (<result> = false)
-		if (<ErrorCode> = corrupt)
+		if (<errorcode> = corrupt)
 			memcard_error \{error = create_corrupted_data_menu
-				params = {
+				Params = {
 					file_type = jam_file
 				}}
 		else
 			memcard_error \{error = create_load_failed_menu}
 		endif
 	endif
-	SaveToMemoryCard \{filename = $memcard_jamsession_new_file_name
-		FileType = jamsession
+	savetomemorycard \{filename = $memcard_jamsession_new_file_name
+		filetype = jamsession
 		usepaddingslot = never}
 	if (<result> = false)
-		if (<ErrorCode> = OutOfSpace)
+		if (<errorcode> = outofspace)
 			memcard_error \{error = create_out_of_space_menu}
 		else
 			if (<overwrite> = 1)
@@ -375,15 +402,17 @@ script memcard_rename_jam
 	endif
 	change \{jam_selected_song = $memcard_jamsession_new_file_name}
 	change \{memcard_jamsession_file_name = $memcard_jamsession_new_file_name}
-	GetMemCardDirectoryListing
+	getmemcarddirectorylisting
 	jam_update_controller_directory_listing controller = ($MemcardController) directorylisting = <directorylisting>
 	change jam_curr_directory_listing = <directorylisting>
 	printf \{channel = jam_mode
 		qs("\Ljamsession_renamememcardfile end")}
-	change \{MemcardSuccess = true}
+	change \{memcardsuccess = true}
 	//memcard_wait_for_timer
 	create_rename_success_menu
 	guitar_memcard_save_success_sound
+	//Wait \{1
+	//	seconds}
 	memcard_sequence_quit
 endscript
 
@@ -391,43 +420,45 @@ script memcard_delete_jam
 	printf \{channel = jam_mode
 		qs("\Lmemcard_delete_jam")}
 	mark_unsafe_for_shutdown
-	MC_WaitAsyncOpsFinished
-	change \{MemcardSavingOrLoading = Saving}
+	mc_waitasyncopsfinished
+	change \{memcardsavingorloading = saving}
 	memcard_check_for_card
-	ResetTimer
+	resettimer
 	memcard_enum_folders
 	create_delete_menu
-	if MC_FolderExists \{FolderName = $memcard_jamsession_content_name}
-		MC_SetActiveFolder \{FolderName = $memcard_jamsession_content_name}
+	if mc_folderexists \{foldername = $memcard_jamsession_content_name}
+		mc_setactivefolder \{foldername = $memcard_jamsession_content_name}
 	else
 		memcard_error \{error = create_no_save_found_menu}
 	endif
-	MC_LoadTOCInActiveFolder
-	MC_SetActiveFolder \{FolderName = $memcard_jamsession_content_name}
-	DeleteMemCardFile \{filename = $memcard_jamsession_file_name
-		FileType = jamsession}
+	mc_loadtocinactivefolder
+	mc_setactivefolder \{foldername = $memcard_jamsession_content_name}
+	deletememcardfile \{filename = $memcard_jamsession_file_name
+		filetype = jamsession}
 	if (<result> = false)
-		if (<ErrorCode> = corrupt)
+		if (<errorcode> = corrupt)
 			memcard_error \{error = create_corrupted_data_menu
-				params = {
+				Params = {
 					file_type = jam_file
 				}}
-		elseif (<ErrorCode> = badfolder)
+		elseif (<errorcode> = badfolder)
 			memcard_error \{error = create_corrupted_data_menu
-				params = {
+				Params = {
 					file_type = jam_file
 				}}
 		else
 			memcard_error \{error = create_save_failed_menu}
 		endif
 	endif
-	GetMemCardDirectoryListing
+	getmemcarddirectorylisting
 	jam_update_controller_directory_listing controller = ($MemcardController) directorylisting = <directorylisting>
 	change jam_curr_directory_listing = <directorylisting>
-	change \{MemcardSuccess = true}
+	change \{memcardsuccess = true}
 	//memcard_wait_for_timer
 	create_delete_success_menu
 	guitar_memcard_save_success_sound
+	//Wait \{1
+	//	seconds}
 	memcard_sequence_quit
 	printf \{channel = jam_mode
 		qs("\Lmemcard_delete_jam end")}
@@ -444,7 +475,6 @@ script boot_download_scan \{event_params = {
 	if ($lnlwl_dlc_already_scanned = 0)
 		Wait \{1
 			gameframes}
-		startrendering \{reason = menu_transition}
 		if NOT ui_event_exists_in_stack \{name = 'mainmenu'}
 			if ControllerPressed x <controller>
 				if ControllerPressed circle <controller>
@@ -467,16 +497,31 @@ script boot_download_scan \{event_params = {
 			break
 		endif
 		Wait \{1
-			gameframe}
+			GameFrame}
 		repeat
 		if ($shutdown_game_for_signin_change_flag = 1)
 			return
 		endif
 		change lnlwl_dlc_already_scanned = 1
 	endif
-	ui_event_wait <event_params>
-	if ((<event_params>.data.state) = uistate_jam)
-		create_loading_screen \{jam_mode = 1}
+	if ($invite_controller != -1)
+		change \{signin_jam_mode = 0}
+		spawnscriptnow \{ui_boot_guitar_follow_invite}
+		return
+	endif
+	if NOT ui_event_exists_in_stack \{name = 'mainmenu'}
+		if isRBDrum \{controller = $primary_controller}
+			ui_event_wait event = menu_replace data = {state = uistate_optimal_drum event_params = <event_params>}
+		else
+			ui_event_wait <event_params>
+		endif
+	else
+		ui_event_wait <event_params>
+	endif
+	if structurecontains structure = (<event_params>.data) state
+		if ((<event_params>.data.state) = uistate_jam)
+			create_loading_screen \{jam_mode = 1}
+		endif
 	endif
 	change respond_to_signin_changed = ($store_respond_to_signin_changed)
 endscript
@@ -520,6 +565,15 @@ script ui_band_mode_signin_changed
 	endif
 	index = (<index> + 1)
 	repeat <array_size>
+	current_desc = (<descs> [<index>])
+	<current_desc> :SE_SetProps reposition_pos = (0.0, 450.0) ready_banner_pos = (0.0, 500.0) time = 0.1 motion = ease_in
+	begin
+	if NOT scriptisrunning \{ui_band_mode_signin}
+		break
+	endif
+	Wait \{1
+		GameFrame}
+	repeat
 	<current_menu> :GetSingleTag menu
 	if (($is_network_game = 1) && (<menu> = net_remote_root))
 		menu = net_remote_root
@@ -541,9 +595,6 @@ script ui_band_mode_signin_changed
 		endif
 	endswitch
 	<current_menu> :SetTags controller_instrument = none
-	MyInterfaceElement :GetSingleTag \{descs}
-	current_desc = (<descs> [<index>])
-	<current_desc> :SE_SetProps reposition_pos = (0.0, 0.0) ready_banner_pos = (0.0, 500.0) time = 0.1 motion = ease_in
 endscript
 
 script ui_band_name_logo_signin_changed controller = ($primary_controller)
@@ -561,21 +612,22 @@ endscript
 script shutdown_game_for_signin_change \{unloadcontent = 1
 		signin_change = 0}
 	printf \{qs("\Lshutdown_game_for_signin_change")}
-	KillSpawnedScript \{name = SpawnedOneShotBeginRepeatLoop}
-	KillSpawnedScript \{name = OneShotsBetweenSongs}
-	KillSpawnedScript \{name = SurgeBetweenSongs}
+	killspawnedscript \{name = SpawnedOneShotBeginRepeatLoop}
+	killspawnedscript \{name = OneShotsBetweenSongs}
+	killspawnedscript \{name = SurgeBetweenSongs}
 	spawnscriptnow \{Kill_Transition_Preload_Streams}
 	change \{shutdown_game_for_signin_change_flag = 1}
 	StopAllSounds
 	KillMenuMusic
-	KillSpawnedScript \{name = net_init}
-	KillSpawnedScript \{name = do_calibration_update}
-	KillSpawnedScript \{name = cl_do_ping}
-	KillSpawnedScript \{name = kill_off_and_finish_calibration}
-	KillSpawnedScript \{name = menu_calibrate_lag_create_circles}
-	KillSpawnedScript \{name = gameplay_end_game}
-	KillSpawnedScript \{name = net_party_lost_party_connection_kill_popup}
-	NetSessionFunc \{obj = match
+	killspawnedscript \{name = net_init}
+	killspawnedscript \{name = do_calibration_update}
+	killspawnedscript \{name = cl_do_ping}
+	killspawnedscript \{name = kill_off_and_finish_calibration}
+	killspawnedscript \{name = menu_calibrate_lag_create_circles}
+	killspawnedscript \{name = gameplay_end_game}
+	killspawnedscript \{name = matchmaking_countdown_end_game_script_spawned}
+	killspawnedscript \{name = net_party_lost_party_connection_kill_popup}
+	netsessionfunc \{obj = match
 		func = cancel_join_server}
 	set_demonware_failed
 	destroy_player_drop_events
@@ -585,28 +637,28 @@ script shutdown_game_for_signin_change \{unloadcontent = 1
 	memcard_sequence_cleanup_generic
 	destroy_leaving_lobby_dialog
 	kill_intro_celeb_ui
-	KillSpawnedScript \{name = create_exploding_text}
+	killspawnedscript \{name = create_exploding_text}
 	destroy_all_exploding_text
 	cheat_turnoffalllocked
 	destroy_credits_menu
 	quit_network_game_early \{signin_change}
-	KillSpawnedScript \{name = gameplay_end_game}
-	KillSpawnedScript \{name = play_song_game_over_spawned}
+	killspawnedscript \{name = gameplay_end_game}
+	killspawnedscript \{name = play_song_game_over_spawned}
 	setup_sessionfuncs
-	if NetSessionFunc \{obj = session
+	if netsessionfunc \{obj = session
 			func = has_active_session}
-		NetSessionFunc \{obj = session
+		netsessionfunc \{obj = session
 			func = stop_singleplayer_session}
 	endif
 	tutorial_shutdown
-	DeRegisterAtoms
+	deregisteratoms
 	kill_gem_scroller \{no_render = 1
 		restarting}
 	destroy_movie_viewport
 	clean_up_user_control_helpers
-	Menu_Music_Off
+	menu_music_off
 	unload_songqpak
-	SetPakManCurrentBlock \{map = zones
+	SetPakManCurrentBlock \{map = Zones
 		pak = none
 		block_scripts = 1}
 	destroy_band \{unload_paks}
@@ -622,7 +674,7 @@ script shutdown_game_for_signin_change \{unloadcontent = 1
 	set_default_misc_globals
 	cleanup_songwon_event
 	clear_wait_for_net_match_available_items
-	UnPauseGame
+	unpausegame
 	change \{shutdown_game_for_signin_change_flag = 0}
 	printf \{qs("\Lshutdown_game_for_signin_change end")}
 endscript
@@ -631,10 +683,18 @@ script sysnotify_handle_signin_change
 	printf \{qs("\L--------------------------------")}
 	printf qs("\Lsysnotify_handle_signin_change %d") d = <controller>
 	printf \{qs("\L--------------------------------")}
-	change \{invite_controller = -1}
+	if ($invite_controller = <controller>)
+		change \{invite_controller = -1}
+	endif
 	if ($signin_change_happening = 1)
 		printf \{qs("\LALREADY BEING PROCESSED")}
 		return
+	endif
+	if (<message> = live_connection_lost)
+		if NOT ($is_network_game)
+			printf \{qs("\LDISCARDING CONNECTION LOSS IN OFFLINE GAME")}
+			return
+		endif
 	endif
 	change \{signin_change_happening = 1}
 	sysnotify_wait_until_safe
@@ -646,6 +706,7 @@ script sysnotify_handle_signin_change
 	switch <message>
 		case live_connection_lost
 		if NOT ($is_network_game)
+			SoftAssert \{qs("\LInternal signin error")}
 			change \{signin_change_happening = 0}
 			return
 		else
