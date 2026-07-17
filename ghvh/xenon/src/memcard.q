@@ -10,6 +10,7 @@ script memcard_choose_storage_device \{StorageSelectorForce = 0}
 		if (<StorageSelectorForce> = 0)
 			// persist cache if a new profile overrides globals
 			change lnlwl_dlc_already_scanned = 1  // referenced in download.q
+			// ^ we dont need this in ghvh
 			goto \{create_storagedevice_warning_menu}
 		endif
 	endif
@@ -125,7 +126,9 @@ script memcard_delete_file \{file_type = `default`}
 			mc_setactivefolder \{foldername = $memcard_content_name}
 			mc_loadtocinactivefolder
 		endif
-		DestroyScreenElement \{id = ps3_delete_fader}
+		if ScreenElementExists \{id = ps3_delete_fader}
+			DestroyScreenElement \{id = ps3_delete_fader}
+		endif
 	else
 		if (<file_type> = `default`)
 			if mc_folderexists \{foldername = $memcard_content_name}
@@ -208,24 +211,24 @@ script memcard_save_jam \{overwriteconfirmed = 0
 		qs("\Lmemcard_save_jam")}
 	memcard_enum_folders
 	create_save_menu
-	if mc_folderexists \{foldername = $memcard_jamsession_content_name}
+	if mc_folderexists \{foldername = $memcard_content_jamsession_name}
 		if (<card_was_in_slot> = false)
 			if (<overwriteconfirmed> = 1)
 				<overwrite> = 1
 				create_overwrite_menu
 				resettimer
-				mc_setactivefolder \{foldername = $memcard_jamsession_content_name}
+				mc_setactivefolder \{foldername = $memcard_content_jamsession_name}
 			else
 				goto \{create_confirm_overwrite_menu}
 			endif
 		else
-			mc_setactivefolder \{foldername = $memcard_jamsession_content_name}
+			mc_setactivefolder \{foldername = $memcard_content_jamsession_name}
 		endif
 	else
 		if NOT MC_SpaceForNewFolder \{desc = guitarcontent}
 			memcard_error \{error = create_out_of_space_menu}
 		endif
-		mc_createfolder \{name = $memcard_jamsession_content_name
+		mc_createfolder \{name = $memcard_content_jamsession_name
 			desc = JamSessionsContent}
 		if (<result> = false)
 			if (<errorcode> = outofspace)
@@ -314,8 +317,8 @@ script memcard_load_jam
 		qs("\Lmemcard_load_jam")}
 	memcard_enum_folders
 	create_load_file_menu
-	if mc_folderexists \{foldername = $memcard_jamsession_content_name}
-		mc_setactivefolder \{foldername = $memcard_jamsession_content_name}
+	if mc_folderexists \{foldername = $memcard_content_jamsession_name}
+		mc_setactivefolder \{foldername = $memcard_content_jamsession_name}
 	else
 		memcard_error \{error = create_no_save_found_menu}
 	endif
@@ -330,7 +333,7 @@ script memcard_load_jam
 			memcard_error \{error = create_load_failed_menu}
 		endif
 	endif
-	mc_setactivefolder \{foldername = $memcard_jamsession_content_name}
+	mc_setactivefolder \{foldername = $memcard_content_jamsession_name}
 	loadfrommemorycard \{filename = $memcard_jamsession_file_name
 		filetype = jamsession}
 	if (<result> = false)
@@ -366,13 +369,13 @@ script memcard_rename_jam
 		qs("\Ljamsession_renamememcardfile")}
 	memcard_enum_folders
 	create_save_menu
-	if mc_folderexists \{foldername = $memcard_jamsession_content_name}
-		mc_setactivefolder \{foldername = $memcard_jamsession_content_name}
+	if mc_folderexists \{foldername = $memcard_content_jamsession_name}
+		mc_setactivefolder \{foldername = $memcard_content_jamsession_name}
 	else
 		memcard_error \{error = create_no_save_found_menu}
 	endif
 	mc_loadtocinactivefolder
-	mc_setactivefolder \{foldername = $memcard_jamsession_content_name}
+	mc_setactivefolder \{foldername = $memcard_content_jamsession_name}
 	RenameMemCardFile \{filename = $memcard_jamsession_file_name
 		filetype = jamsession
 		newfilename = $memcard_jamsession_new_file_name}
@@ -417,8 +420,6 @@ script memcard_rename_jam
 endscript
 
 script memcard_delete_jam 
-	printf \{channel = jam_mode
-		qs("\Lmemcard_delete_jam")}
 	mark_unsafe_for_shutdown
 	mc_waitasyncopsfinished
 	change \{memcardsavingorloading = saving}
@@ -426,13 +427,13 @@ script memcard_delete_jam
 	resettimer
 	memcard_enum_folders
 	create_delete_menu
-	if mc_folderexists \{foldername = $memcard_jamsession_content_name}
-		mc_setactivefolder \{foldername = $memcard_jamsession_content_name}
+	if mc_folderexists \{foldername = $memcard_content_jamsession_name}
+		mc_setactivefolder \{foldername = $memcard_content_jamsession_name}
 	else
 		memcard_error \{error = create_no_save_found_menu}
 	endif
 	mc_loadtocinactivefolder
-	mc_setactivefolder \{foldername = $memcard_jamsession_content_name}
+	mc_setactivefolder \{foldername = $memcard_content_jamsession_name}
 	deletememcardfile \{filename = $memcard_jamsession_file_name
 		filetype = jamsession}
 	if (<result> = false)

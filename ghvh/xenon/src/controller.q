@@ -1,0 +1,1 @@
+allow_controller_for_all_instruments = 1
