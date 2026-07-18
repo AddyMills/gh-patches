@@ -1,2 +1,3 @@
 // Flip vocal pitch lag movement
-vocal_pitch_detection_lag = -32
+// Also adjust this to the GH5 value (assume logitech mic)
+vocal_pitch_detection_lag = -50
